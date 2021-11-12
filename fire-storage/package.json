@@ -1,0 +1,17 @@
+{
+  "name": "fire-storage",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "echo 'to-be-implemented!'"
+  },
+  "dependencies": {
+    "firebase": "^9.1.3",
+    "firebase-admin": "^10.0.0",
+    "knex": "^0.95.13",
+    "nominatim-geocoder": "^0.1.4",
+    "pg": "^8.7.1",
+    "tightship-config": "1.0.0"
+  },
+  "devDependencies": {}
+}

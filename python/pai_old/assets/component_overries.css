@@ -1,0 +1,54 @@
+.DateRangePickerInput{
+    background-color: #6f7780;
+    border-color: #6f7780;
+}
+
+.DateInput_input{
+    background-color: #6f7780;
+    border-color: #6f7780;
+}
+
+.card {
+    border-color: #232629;
+    border-width: 2px;
+}
+
+.dash-cell.column-2{
+    border-radius: 15px;
+    opacity: 70%;
+    padding-right: 13px;
+}
+
+tr {
+    padding-top: 2rem;
+    line-height: 25px;
+    min-height: 25px;
+    height: 25px;
+ }
+
+#headertitle{
+    border: none;
+}
+
+#statcards{
+    border: none;
+}
+
+.atm-stats-dropdown{
+    color: #aaa;
+}
+
+.Select-control {
+    background-color: rgb(50, 50, 49) !important;
+    border: none  !important;
+}
+
+
+.Select-menu-outer {
+    background-color: rgb(50, 50, 49) !important;
+    border: none  !important;
+}
+
+.Select-value-label {
+    color: #aaa !important;
+}

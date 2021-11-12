@@ -1,0 +1,16 @@
+{
+    "name": "test-folder",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "help": "put yer junk in here",
+        "dev": "echo 'to-be-implemented!'"
+    },
+    "dependencies": {
+      "fire-storage": "1.0.0",
+      "tightship-config": "1.0.0"
+    },
+    "devDependencies": {
+      
+    }
+  }

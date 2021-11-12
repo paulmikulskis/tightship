@@ -1,0 +1,17 @@
+{
+    "name": "tightship-config",
+    "version": "1.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "echo 'to-be-implemented!'"
+    },
+    "dependencies": {
+        "chalk": "^4.1.2",
+        "convict": "^6.2.1",
+        "dotenv": "^10.0.0",
+        "envinfo": "^7.8.1",
+        "fire-storage": "1.0.0",
+        "prompts": "^2.4.2"
+    },
+    "devDependencies": {}
+}

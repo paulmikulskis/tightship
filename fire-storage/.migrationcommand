@@ -1,0 +1,2 @@
+npx knex --esm --knexfile ./knexfile.cjs migrate:make first_migration
+npx knex --esm --knexfile ./knexfile.cjs migrate:latest

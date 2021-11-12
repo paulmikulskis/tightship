@@ -1,0 +1,33 @@
+version: "3.9"
+services:
+  redis:
+    image: "redis:alpine"
+    ports:
+      - "6379:6379"
+    environment:
+      - ALLOW_EMPTY_PASSWORD=yes
+  cloud-sql-proxy:
+      image: "gcr.io/cloudsql-docker/gce-proxy:1.19.1"
+      volumes:
+        - "./gcloud-key.json:/config"
+      ports:
+        - "127.0.0.1:54321:5432"
+      command: "/cloud_sql_proxy -instances=tightship-6fc33:us-central1:tightship-prod=tcp:0.0.0.0:5432 -credential_file=/config"
+  omnidb:
+      image: "taivokasper/omnidb"
+      volumes:
+        - ".omnidb:/etc/omnidb"
+      ports:
+        - "127.0.0.1:8090:8080"
+        - "25482:25482"
+  postgres:
+      restart: always
+      image: "postgres:11-alpine"
+      ports:
+        - "5432:5432"
+      volumes:
+        - "./fire-storage/.psql_conf/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d"
+        - "./fire-storage/.postgres_persist:/var/lib/postgresql/data"
+      environment:
+        - POSTGRES_PASSWORD=1234count
+        - POSTGRES_DB=tightship
