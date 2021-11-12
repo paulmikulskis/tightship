@@ -18,6 +18,7 @@ const ConnectionsContainer = styled.div`
     height: 100%;
     width: 100%;
     padding: 2rem 1rem;
+    
 `;
 
 const Center = styled.div`
@@ -33,6 +34,7 @@ const ConnectionsAccordion = styled(Accordion)`
     margin-top: 1rem;
     margin-bottom: 1rem;
     width: 100%;
+    padding: 1rem;
 `;
 
 const Connections = () => {
@@ -57,7 +59,7 @@ const Connections = () => {
                         Payment Alliance International
                     </Typography>
                 </AccordionSummary>
-                <AccordionDetails>
+                <AccordionDetails >
                     <PaiConnect />
                 </AccordionDetails>
             </ConnectionsAccordion>

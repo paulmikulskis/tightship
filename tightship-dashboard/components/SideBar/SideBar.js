@@ -39,14 +39,12 @@ const MenuContainer = styled.div`
 const SideBarButton = styled(Button)`
     width: 100%;
     height: 4rem;
-    text-align: left;
     padding: 1rem;
     font-size: 1rem; 
-    justify-content: left;
     color: black;
+
 `;
 
-const MuiButton = styled(Button)``;
 
 
 const SideBar = () => {
@@ -79,10 +77,13 @@ const SideBar = () => {
             <ButtonGroup
             orientation="vertical"
             aria-label="vertical outlined button group">
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app')}>Home</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/connections')}>Connections</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')}>Account</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={signOutUser}>Logout</SideBarButton>
+                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app')} style={{padding: "1rem", justifyContent: "flex-start"}}>Home</SideBarButton>
+                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/connections')} style={{padding: "1rem", justifyContent: "flex-start"}}>Connections</SideBarButton>
+                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Mapping</SideBarButton>
+                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Vaulting</SideBarButton>
+                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Data</SideBarButton>
+                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Account</SideBarButton>
+                <SideBarButton color='secondary' variant="text" onClick={signOutUser} style={{padding: "1rem", justifyContent: "flex-start"}}>Logout</SideBarButton>
             </ButtonGroup>
             </MenuContainer>
 

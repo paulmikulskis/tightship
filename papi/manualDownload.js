@@ -9,7 +9,7 @@ import fs from "fs";
 const arg = process.argv[2].trim('"')
 
 
-const client = new PAIClient(subDays(new Date(), 2))
+const client = new PAIClient(subDays(new Date(), 100))
 console.log('client age: ', client.inception)
 await client.login('sergiog', 'Junesixteen2021')
 var report = await client.downloadReport(arg)
@@ -19,9 +19,9 @@ if (report) {
     //     rep[key]['Trx Time'] = formatISO9075(  new Date(rep[key]['Trx Time']).setHours(0, 0, 0, 0)  )
     // }
     
-    // report.print()
-    let data = JSON.stringify(report.to_json());
-    fs.writeFileSync(`${arg.replace(/[ ]+/g,"_").toLocaleLowerCase()}-MOCK.json`, data);
+    report.print()
+    //let data = JSON.stringify(report.to_json());
+    //fs.writeFileSync(`${arg.replace(/[ ]+/g,"_").toLocaleLowerCase()}-MOCK.json`, data);
     
 
 

@@ -17,7 +17,7 @@
     "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest",
     "@mui/styles": "^5.1.0",
     "@mui/utils": "^5.0.1",
-    "@mui/x-data-grid": "^4.0.2",
+    "@mui/x-data-grid": "^5.0.0-beta.7",
     "date-fns": "^2.25.0",
     "fire-storage": "1.0.0",
     "firebase": "^9.1.3",

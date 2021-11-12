@@ -43,11 +43,13 @@ const Body = styled(CardContent)`
         margin: 1rem 1rem;
     }
     p {
-        padding: 0;
-        margin: 0;
         color: grey;
         font-size: 12px;
     }
+`;
+
+const StyledDataGrid = styled(DataGrid)`
+
 `;
 
 
@@ -100,16 +102,16 @@ const DaysAtZero = () => {
             <Body>
                 <h4>Terminal Hotbar</h4>
                 <div style={{height: '100%', width: "100%" }}>
-                <DataGrid 
-                    rows={rows}
-                    columns={columns}
-                    density={'compact'}
-                    pagination
-                    hideFooter={true}
-                    components={{
-                        footer: () => <div>This is my footer</div>
-                    }}
-                />
+                    <StyledDataGrid 
+                        rows={rows}
+                        columns={columns}
+                        density={'compact'}
+                        pagination
+                        hideFooter={true}
+                        components={{
+                            footer: () => <div>This is my footer</div>
+                        }}
+                    />
                 </div>
             </Body>
         </StyledCard>

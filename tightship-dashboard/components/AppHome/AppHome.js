@@ -12,6 +12,10 @@ import { useQuery, gql } from "@apollo/client";
 import WDTxnStatCard from '../StatCard/WDTxnStatCard';
 import DaysAtZero from '../StatCard/DaysAtZero';
 import AtmHotlist from '../StatCard/AtmHotlist';
+import PullNewData from '../ActionCards/PullNewData';
+import ContactVaulters from '../ActionCards/ContactVaulters';
+import ConfigureAlertRules from '../ActionCards/ConfigureAlertRules';
+import GotoDashboard from '../ActionCards/GotoDashboard';
 import { subQuarters, format } from 'date-fns';
 
 /**
@@ -32,7 +36,8 @@ const StyledHome = styled.div`
     row-gap: 1rem;
     column-gap: 1rem;
     padding: 1rem;
-    height: 100%;    
+    margin: 1rem;
+    height: 100%;  
 `;
 
 const Center = styled.div`
@@ -123,10 +128,10 @@ const Home = () => {
                 <Center><DaysAtZero /></Center>
                 <Center style={{'grid-column': '3/5'}}><AtmHotlist /></Center>
             </CardStats>
-            <Center><p>Home App Component</p></Center>
-            <Center><p>Home App Component</p></Center>
-            <Center><p>Home App Component</p></Center>
-            <Center><p>Home App Component</p></Center>
+            <PullNewData />
+            <ContactVaulters />
+            <ConfigureAlertRules />
+            <GotoDashboard />
         </StyledHome>
     )
 }
