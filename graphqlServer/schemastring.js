@@ -116,7 +116,16 @@ type AtmError {
 type App {
   # All the main endpoints for the app:
   accountID: String!
-  terminals(startDate: Date, endDate: Date, tid: String, uid: String!): Terminals
+  terminals(
+    errorLogsStartDate: Date, 
+    errorLogsEndDate: Date, 
+    statsStartDate: Date,
+    statsEndDate: Date,
+    dailyLogsStartDate: Date,
+    dailyLogsEndDate: Date,
+    tid: String, 
+    uid: String!
+  ): Terminals
 }
 
 

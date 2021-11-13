@@ -41,9 +41,9 @@ const Body = styled(CardContent)`
 
 
 export const DAYS_AT_ZERO_QUERY = gql`
-    query DaysAtZero($uid: String!, $start: Date) {
+    query DaysAtZero($uid: String!, $statsStartDate: Date) {
         app(uid: $uid) {
-            terminals(uid: $uid, startDate: $start) {
+            terminals(uid: $uid, statsStartDate: $statsStartDate) {
                 stats {
                     daysAtZero {
                         terminalId

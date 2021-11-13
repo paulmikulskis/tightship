@@ -64,7 +64,7 @@ const ContactVaulters = () => {
         <StyledCard elevation={6}>
             <Body>
                 <h3>Text My Vaulters</h3>
-                <p>Send an instant text message to all registered vaulters of your ATMs with a balance update right now</p>
+                <p>Send an a balance update to all registered vaulters</p>
             </Body>
             <CallToAction>
                 <Button variant="contained" size="small" endIcon={<SendIcon />}>send blast SMS</Button>

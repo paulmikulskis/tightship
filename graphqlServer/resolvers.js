@@ -112,7 +112,7 @@ const terminalErrorLogsFunction = async (startDate, endDate, tid, uid) => {
 }
 
 
-const terminalAverages = async (tid, startDate, endDate, uid) => {
+const terminalAverages = async (startDate, endDate, tid, uid) => {
     const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
     const end = endDate ? new Date(endDate) : new Date();
     const averages = await Postgres.getTerminalAverages(
@@ -233,15 +233,19 @@ export const resolvers = {
             // getting user info, argument sanitization
             var uid = args.user?.uid;
             uid = 'testUid_420';
-            const startDate = args.startDate ? new Date(args.startDate) : subDays(new Date(), 7);
-            const endDate = args.endDate ? new Date(args.endDate) : new Date();
+            const dailyLogsStartDate = args.dailyLogsStartDate ? new Date(args.dailyLogsStartDate) : subDays(new Date(), 7);
+            const dailyLogsEndDate = args.dailyLogsEndDate ? new Date(args.dailyLogsEndDate) : new Date();
+            const errorLogsStartDate = args.errorLogsStartDate ? new Date(args.errorLogsStartDate) : subDays(new Date(), 2);
+            const errorLogsEndDate = args.errorLogsEndDate ? new Date(args.errorLogsEndDate) : new Date();
+            const statsStartDate = args.statsStartDate ? new Date(args.statsStartDate) : subDays(new Date(), 7);
+            const statsEndDate = args.statsEndDate ? new Date(args.statsEndDate) : new Date();
             const tid = args.tid;
             // the actual terminals resolver:
             return {
-                logs: terminalLogsRoot(startDate, endDate, tid, uid),
+                logs: terminalLogsRoot(dailyLogsStartDate, dailyLogsEndDate, tid, uid),
                 info: resolveUserTerminalInfo(uid),
-                stats: terminalStatsRoot(startDate, endDate, tid, uid),
-                errors: terminalErrorsRoot(startDate, endDate, tid, uid)
+                stats: terminalStatsRoot(statsStartDate, statsEndDate, tid, uid),
+                errors: terminalErrorsRoot(errorLogsStartDate, errorLogsEndDate, tid, uid)
             };
         },
     },

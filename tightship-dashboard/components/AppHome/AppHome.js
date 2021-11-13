@@ -30,6 +30,11 @@ import { subQuarters, format } from 'date-fns';
  * 
  */
 
+const StyledHomeDock = styled.div`
+    width: 100%;
+    height: 20%;
+`;
+
 const StyledHome = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
@@ -74,6 +79,17 @@ const HomeHero = styled(Card)`
     flex-direction: row;
     align-items: center;
     justify-content: center;
+`;
+
+const HomeHeroContent = styled(CardContent)`
+    height: 100%;
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    h1 {
+        padding-top: 2rem;
+    }
 `;
 
 const WITHDRAWAL_STATS_QUERY = gql`
@@ -121,10 +137,12 @@ const Home = () => {
                 <AppSearch />
             </PaperNav>
             <HomeHero>
-                <CardContent>
+                <HomeHeroContent>
                     <h1>Hey there, {avatarname}</h1>
-                    <HomeDock />
-                </CardContent>
+                    <StyledHomeDock>
+                        <HomeDock />
+                    </StyledHomeDock>
+                </HomeHeroContent>
             </HomeHero>
             <CardStats>
                 <Center><WDTxnStatCard total={totalWithdrawlAmnt} highestDraw={highestDraw}/></Center>
