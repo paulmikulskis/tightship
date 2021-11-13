@@ -54,10 +54,12 @@ const dailyDownload = async (job, paiClient=undefined) => {
     };
     const dtr = await pai.downloadReport('Daily Transaction Report', lookbackDate);
     const aclr = await pai.downloadReport('ATM Cash Load Report', lookbackDate);
+    const errr = await pai.downloadReport('Terminal Error Report', lookbackDate);
 
     // take away the time component from the dates on the ATM cash load report so we can match against them
     logger.info(`processing daily logs for ${job.uid} for terminals: ${Object.keys(atmState)}`);
     logger.info(`found furtherst needed lookback date to be ${formatISO9075(lookbackDate)}`);
+    await createTerminalErrorLogs(job.uid, PAITerminalIds, errr)
     for (var tid of Object.keys(atmState)) {
         logger.info(`processing daily logs for terminal ${tid}`)
         await createDailyLogs(atmState[tid], dtr, aclr);
@@ -175,7 +177,7 @@ const createDailyLogs = async (atmData, dtr, aclr) => {
  * @param {Array<String>} PAITerminalIds list of terminal IDs from this user's ATM List report from PAI
  * @param {DataFrame} atms Danfo dataframe of "ATM List" report from PAI
  */
-const crupdateATMs = async (uid, PAITerminalIds, atms, balances) => {
+export const crupdateATMs = async (uid, PAITerminalIds, atms, balances) => {
     logger.info('crupdating ATMs');
     const psqlTerminalList = await Postgres.getUserTerminals(
         Postgres.db,
@@ -248,8 +250,27 @@ const crupdateATMs = async (uid, PAITerminalIds, atms, balances) => {
         const surgchg = parseFloat(term['Surcharge Amount'].split(' ')[1].replace(/[$,]+/g,""))
         var balance = balances
             .loc({rows: atms['Terminal Number'].eq(tID)})
-            .to_json()[0]
-        balance = balance ? parseFloat(balance[format(subDays(new Date(), 1), "MM/dd/yy")]) : -1
+            .to_json()[0];
+        // get the balance of the ATM day prior to the last day on the pulled report
+        // create am array from the dict return, map the values to date objects, then return
+        // the greatest date value so long it is not the last one since the last one might be
+        // data from today, and might not be populated yet.  
+        balance = balance ? parseFloat(
+            Object.entries(balance)
+            .filter(([key]) => {
+                return !key.includes('Terminal Number') && !key.includes('Location')
+            })
+            .map(([key, value]) => {
+                return [new Date(key), value]
+            })
+            .reduce((acc, key, i, arr) => {
+                return (
+                        (new Date(acc[0]).getTime() < new Date(key[0]).getTime()) && 
+                        (i < arr.length - 1) 
+                        ) ? key : acc
+            })[1]) : 0
+        
+        //console.log('BALANCE=', balance)
         allAtms = {
             ...allAtms,
             [tID]: {
@@ -291,7 +312,56 @@ const crupdateATMs = async (uid, PAITerminalIds, atms, balances) => {
     return allAtms;
 }
 
+const createTerminalErrorLogs = async (uid, PAITerminalIds, errorReport) => {
+    logger.info(`crupdating terminal errors for user ${uid}`);
+
+    for (var tid of PAITerminalIds) {
+        var datefilter = undefined;
+        const tidErrs = await Postgres.getTerminalErrors(
+            Postgres.db, 
+            tid, 
+            datefilter,
+        );
+        const errs = errorReport.loc({rows: errorReport['Terminal Number'].eq(tid)}).to_json()
+        for (var err of errs) {
+            const errExists = tidErrs.map(el => {
+                // these were used for low level debugging dates...want to keep for now 
+                // console.log('--------\ntesting to see if duplicate error exists:')
+                // console.log(`el.terminal_id=${el.terminal_id}, tid=${tid}`);
+                // console.log(`el.error_time=${el.error_time}, this_error's time=${err['Error Time']}`)
+                // console.log(`in Date() format: ${new Date(el.error_time)}, ${new Date(err['Error Time'])}`)
+                // console.log(`these dates are equated as ${new Date(el.error_time).getTime() === new Date(err['Error Time']).getTime()}`)
+                return (el.terminal_id == tid) && (new Date(el.error_time).getTime() === new Date(err['Error Time']).getTime())
+            }).reduce((a, b) => a || b, false);
+            if (!errExists) {
+                //console.log(`creating error for terminal ${tid}, \nerr=${JSON.stringify(err)}`)
+                try {
+                    await Postgres.createTerminalError(
+                        Postgres.db,
+                        tid,
+                        err['Group'],
+                        err['Market Partner'],
+                        err['Location'],
+                        err['Address'],
+                        err['City'],
+                        err['State'],
+                        err['Zip'],
+                        new Date(err['Error Time']),
+                        err['Error Code'],
+                        err['Error Description'],
+                    );
+                } catch (err) {
+                    logger.error(`unable to create terminal error log for tid=${tid}, \n${err}`)
+                }
+            };
+        };
+    };
+    return true
+};
+
 
 export {
     dailyDownload as dailyDownloadPAI,
+    crupdateATMs as crupdateATMsPAI,
+    createTerminalErrorLogs as createTerminalErrorLogs
 }

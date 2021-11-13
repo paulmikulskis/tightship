@@ -3,9 +3,9 @@ import { subDays, addDays, format, formatISO9075 } from 'date-fns';
 
 
 /**
- * helper function to take the default return from postgres (*), and
- * destructure/rework that return value into a list of arrays of type DailyLog
- * that the graphql schema can understand 
+ * helper function to take the default return from the daily_log relation from 
+ * postgres (*), and destructure/rework that return value into a list of arrays 
+ * of type DailyLog that the graphql schema can understand 
  * @param {[{}]} logs 
  */
 const destructureDailyLogs = (logs) => {
@@ -38,10 +38,79 @@ const destructureDailyLogs = (logs) => {
     } else return null;
 }
 
+/**
+ * helper function to take the default return from the terminal_errors relation from 
+ * postgres (*), and destructure/rework that return value into a list of arrays 
+ * of type DailyLog that the graphql schema can understand 
+ * @param {[{}]} logs 
+ */
+const destructureErrorLogs = (logs) => {
+    return logs.map(log => {
+        return {
+            terminalId: log.terminal_id,
+            group: log.group,
+            marketPartner: log.partner,
+            locationName: log.location_name,
+            address: log.address,
+            city: log.city,
+            zip: log.zip,
+            state: log.state,
+            errorTime: new Date(log.error_time),
+            errorCode: log.error_code,
+            errorMessage: log.error_message
+        };
+    });
+};
+
+/**
+ * 
+ * @param {{parent, args}} _ parent information from root resolver
+ * @param {*} param1 { uid } the user ID, required for the main entrypoint to the App
+ * @param {*} ctx context
+ * @returns uid
+ */
 const appResolver = async (_, { uid }, ctx) => { 
     // any functions related to setting up the app should go here
     return { uid };
 };
+
+
+const resolveUserTerminalInfo = async (uid) => {
+    const terminals = await Postgres.getUserTerminals(Postgres.db, uid)
+    const terms = terminals.map(t => {
+        return {
+            terminalId: t.terminal_id,
+            registered_owner: t.registered_owner,
+            locationName: t.location_name,
+            group: t.group,
+            partner: t.partner,
+            address: t.address,
+            city: t.city,
+            state: t.state,
+            zip: t.zip,
+            lattitude: t.lattitude,
+            longitude: t.longitude,
+            surcharge_amnt: t.surcharge_amnt,
+            first_txn: t.first_txn,
+            last_txn: t.last_txn,
+            last_settled_txn: t.last_settled_txn,
+            lastBalance: t.last_balance,
+            store: t.store
+        };
+    });
+    //console.log(JSON.stringify(terms, null, 2))
+    return terms
+}
+
+
+const terminalErrorLogsFunction = async (startDate, endDate, tid, uid) => {
+    const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
+    const end = endDate ? new Date(endDate) : new Date();
+    const errs = await Postgres.getUserTerminalErrors(Postgres.db, start, end, tid, uid);
+    console.log('ERRS:', errs)
+    return destructureErrorLogs(errs);
+}
+
 
 const terminalAverages = async (tid, startDate, endDate, uid) => {
     const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
@@ -74,7 +143,7 @@ const terminalTotals = async (startDate, endDate, tid, uid) => {
 const dailyLogsFunction = async (startDate, endDate, tid, uid) => {
     const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
     const end = endDate ? new Date(endDate) : new Date();
-    console.log(`startDate: ${startDate}, endDate: ${endDate}, tid: ${tid}`);
+    //console.log(`startDate: ${startDate}, endDate: ${endDate}, tid: ${tid}`);
     const logs = await Postgres.getTerminalDailyLogs(
         Postgres.db,
         start, 
@@ -101,7 +170,7 @@ const vaultingLogFunction = async (tid, startDate, endDate, uid) => {
 }
 
 
-const daysAtZero = async(startDate, endDate, tid, uid) => {
+const daysAtZero = async (startDate, endDate, tid, uid) => {
     const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
     const end = endDate ? new Date(endDate) : new Date();
     const days = await Postgres.getDailyLogsWithZeroBalance(
@@ -111,8 +180,35 @@ const daysAtZero = async(startDate, endDate, tid, uid) => {
         tid,
         uid
     );
-    return destructureDailyLogs(days)
-}
+    return destructureDailyLogs(days);
+};
+
+
+const terminalLogsRoot = async (startDate, endDate, tid, uid) => {
+    return {
+        daily: await dailyLogsFunction(startDate, endDate, tid, uid),
+        vaulting: await vaultingLogFunction(startDate, endDate, tid, uid)
+    };
+};
+
+
+const terminalStatsRoot = async (startDate, endDate, tid, uid) => {
+    return {
+        daysAtZero: await daysAtZero(startDate, endDate, tid, uid),
+        averages: await terminalAverages(startDate, endDate, tid, uid),
+        totals: await terminalTotals(startDate, endDate, tid, uid)
+    };
+};
+
+
+const terminalErrorsRoot = async (startDate, endDate, tid, uid) => {
+    const errors = await terminalErrorLogsFunction(startDate, endDate, tid, uid);
+    //console.log('ERROR LOGS:', JSON.stringify(errors, null, 2))
+    return {
+        errorLog: errors
+    }
+};
+
 
 export const resolvers = {
 
@@ -133,84 +229,20 @@ export const resolvers = {
             return ctx.user?.uid + '';
         },
 
-        logs: async (parent, args, ctx, info) => {
-            // pass entire functions in the logs resolver,
-            // and access the arguments for the endpoint with `parent`
-            var uid = ctx.user?.uid;
-            uid = 'testUid_420'
-            return {
-                daily: await dailyLogsFunction(
-                    args.startDate,
-                    args.endDate, 
-                    args.terminal_id,
-                    uid
-                ),
-                vaulting: await vaultingLogFunction(
-                    args.terminal_id,
-                    args.startDate,
-                    args.endDate, 
-                    uid
-                )
-            };
-        },
-
-        atmStats: async (parent, args, ctx, info) => {
-            var uid = ctx.user?.uid;
-            uid = 'testUid_420'
-            return {
-                daysAtZero: await daysAtZero(
-                    args.startDate,
-                    args.endDate,
-                    args.terminal_id,
-                    uid
-                ),
-                
-                averages: await terminalAverages(
-                    args.startDate,
-                    args.endDate,
-                    args.terminal_id,
-                    uid
-                ),
-
-                totals: await terminalTotals(
-                    args.startDate,
-                    args.endDate,
-                    args.terminal_id,
-                    uid
-                ),
-            }
-        },
-
         terminals: async (parent, args, ctx, info) => {
-            var uid = ctx.user?.uid;
-            uid = 'testUid_420'
-            const terminals = await Postgres.getUserTerminals(Postgres.db, uid)
-            const terms = terminals.map(t => {
-                return {
-                    terminalId: t.terminal_id,
-                    registered_owner: t.registered_owner,
-                    location_name: t.location_name,
-                    group: t.group,
-                    partner: t.partner,
-                    address: t.address,
-                    city: t.city,
-                    state: t.state,
-                    zip: t.zip,
-                    lattitude: t.lattitude,
-                    longitude: t.longitude,
-                    surcharge_amnt: t.surcharge_amnt,
-                    first_txn: t.first_txn,
-                    last_txn: t.last_txn,
-                    last_settled_txn: t.last_settled_txn,
-                    last_balance: t.last_balance,
-                    store: t.store
-                };
-            });
-            return terms
-        },
-
-        mainDashboardData: async (parent, args, ctx, info) => {
-            return { message: 'main dashboard stat calculations' };
+            // getting user info, argument sanitization
+            var uid = args.user?.uid;
+            uid = 'testUid_420';
+            const startDate = args.startDate ? new Date(args.startDate) : subDays(new Date(), 7);
+            const endDate = args.endDate ? new Date(args.endDate) : new Date();
+            const tid = args.tid;
+            // the actual terminals resolver:
+            return {
+                logs: terminalLogsRoot(startDate, endDate, tid, uid),
+                info: resolveUserTerminalInfo(uid),
+                stats: terminalStatsRoot(startDate, endDate, tid, uid),
+                errors: terminalErrorsRoot(startDate, endDate, tid, uid)
+            };
         },
     },
 

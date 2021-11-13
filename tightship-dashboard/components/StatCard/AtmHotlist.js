@@ -54,18 +54,20 @@ const StyledDataGrid = styled(DataGrid)`
 
 
 export const ATM_HOTLIST = gql`
-    query DaysAtZero($uid: String!) {
+    query AtmHotlistTableQuery($uid: String!) {
         app(uid: $uid) {
-            terminals {
-                last_balance
-                location_name
-                terminalId
+            terminals(uid: $uid){
+                info {
+                    terminalId,
+                    locationName
+                    lastBalance
+                }
             }
         }
     }
 `;
 
-const DaysAtZero = () => {
+const AtmHotlist = () => {
     const user = useFirebaseAuth();
     const uid = user.uid;
     const { loading, error, data } = useQuery(ATM_HOTLIST, {
@@ -89,11 +91,11 @@ const DaysAtZero = () => {
         },
         
     ];
-    const rows = data.app.terminals.map(terminal => {
+    const rows = data.app.terminals.info.map(terminal => {
         return {
             id: terminal.terminalId,
-            location: terminal.location_name,
-            balance: `$${numberWithCommas(terminal.last_balance)}`
+            location: terminal.locationName,
+            balance: `$${numberWithCommas(terminal.lastBalance)}`
         }
     })
 
@@ -122,4 +124,4 @@ const DaysAtZero = () => {
 
 
 
-export default DaysAtZero
+export default AtmHotlist

@@ -135,8 +135,8 @@ export const getTerminalAverages = async (driver, startDate, endDate, tid, uid) 
 };
 
 
-export const getTerminalTotals = async (driver, startDate, endDate, tid, uid) => {
-  console.log(`tid=${tid}, startDate=${startDate}, endDate=${endDate}`)
+export const getTerminalTotals = async (driver, startDate=subDays(new Date(), 7), endDate=new Date(), tid, uid) => {
+  //console.log(`tid=${tid}, startDate=${startDate}, endDate=${endDate}`)
   const logs = await getTerminalDailyLogs(driver, startDate, endDate, tid);
   const atms = await getUserTerminals(driver, uid)
   if (!logs) {
@@ -144,6 +144,7 @@ export const getTerminalTotals = async (driver, startDate, endDate, tid, uid) =>
   }
   // construct a new array which is a unique set of terminal_ids,
   // which we then map to an array of AtmStat types for GraphQL
+  console.log(logs)
   return [...new Set(
     logs.map((log) => {
       return log.terminal_id
@@ -228,6 +229,93 @@ export const getDailyLogsWithVault = async (driver, startDate=subDays(new Date()
 }
 
 
+export const getTerminalErrors = async (driver, tid=undefined, datetime=undefined) => {
+  logger.debug(`getting terminal error for terminal ${tid}`);
+  try {
+    const result = await driver
+      .select("*")
+      .from('terminal_errors')
+      .modify( (thisQuery) => {
+        if (datetime) {
+          thisQuery.where('error_time', '>=', datetime);
+        }
+      })
+      .modify( (thisQuery) => {
+        if (tid) {
+          thisQuery.where('terminal_id', tid);
+        }
+      })
+      .orderBy('error_time', 'desc')
+    return result
+  } catch (err) {
+    logger.error(`query error for getTerminalError for terminal ${tid}, \n${err}`)
+    return undefined;
+  }
+};
+
+
+export const getUserTerminalErrors = async (driver, startDate=subDays(new Date(), 7), endDate=new Date(), tid=undefined, uid) => {
+  logger.debug(`getting terminal error for user ${uid}`);
+  try {
+    const result = await driver
+      .select("*")
+      .from('terminal_errors')
+      .whereBetween('error_time', [startDate, endDate])
+      .modify( (thisQuery) => {
+        if (tid) {
+          thisQuery.where('terminal_id', tid);
+        }
+      })
+      .orderBy('error_time', 'desc')
+    return result
+  } catch (err) {
+    logger.error(`query error for getUserTerminalErrors for user ${uid}, \n${err}`)
+    return undefined;
+  }
+}
+
+
+export const createTerminalError = async (
+    driver,
+    terminal_id,
+    group,
+    partner,
+    location,
+    address,
+    city,
+    state,
+    zip,
+    error_time,
+    error_code,
+    error_message
+  ) => {
+    try {
+      return driver
+        .insert({
+          terminal_id,
+          location_name: location,
+          group,
+          partner,
+          address,
+          city,
+          state,
+          zip,
+          error_time,
+          error_code,
+          error_message, 
+        })
+        .into('terminal_errors')
+        .returning('*')
+        .then((rows) => {
+          return rows[0];
+        });
+    } catch (err) {
+      logger.error(`error inserting terminal error log for terminal ${terminal_id}, \n${err}`)
+      return undefined;
+    };
+};
+
+
 export const getDailyLogsWithZeroBalance = async (driver, startDate=subDays(new Date(), 7), endDate=new Date(), tid=undefined, uid) => {
   logger.debug(
     `getting days that terminal ${tid==undefined ? "[ALL TERMINALS]" : tid} was at zero between ${format(startDate, 'MM/dd/yyyy')} and ${format(endDate, 'MM/dd/yyyy')}`
@@ -244,7 +332,6 @@ export const getDailyLogsWithZeroBalance = async (driver, startDate=subDays(new 
       .whereBetween('log_date', [startDate, endDate])
       .where('balance', '<', 1)
     logger.debug('finished getDailyLogsWithZeroBalance query', result.map(item => item.terminal_id))
-    console.log(result)
     return result;
   } catch (err) {
     logger.error(`query error: for getDailyLogsWithZeroBalance on terminal_id=${tid}\n`, err)
@@ -330,7 +417,8 @@ export const createTerminal = async (
           longitude,
           first_txn,
           active,
-          last_balance
+          last_balance,
+          store: {}
         })
         .into('terminals')
         .returning('*')

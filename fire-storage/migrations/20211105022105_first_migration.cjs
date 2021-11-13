@@ -57,6 +57,20 @@ exports.up = function(knex) {
             table.decimal('last_balance').defaultTo(0)
             table.json('store')
         })
+        .createTable('terminal_errors', function (table) {
+            table.increments().primary()
+            table.string('terminal_id', 255)
+            table.string('location_name', 255).notNullable()
+            table.string('group', 255).notNullable()
+            table.string('partner', 255).notNullable()
+            table.string('address', 255).notNullable()
+            table.string('city', 255).notNullable()
+            table.string('state', 2).notNullable()
+            table.integer('zip')
+            table.timestamp('error_time').defaultTo(knex.fn.now())
+            table.string('error_code', 255).notNullable()
+            table.string('error_message', 255).notNullable()
+        })
         .createTable('daily_atm', function(table) {
             table.increments().primary()
             table.string('terminal_id', 255)
@@ -136,6 +150,7 @@ exports.up = function(knex) {
 exports.down = function(knex) {
     return knex.schema
         .dropTable('daily_atm')
+        .dropTable('terminal_errors')
         .dropTable('terminals')
         .dropTable('users')
 };

@@ -13,37 +13,16 @@ type Mutation {
   hello: String
 }
 
-type Terminal {
-  terminalId: String
-  registered_owner: String
-  location_name: String
-  group: String
-  partner: String
-  address: String
-  city: String
-  state: String
-  zip: String
-  lattitude: Float
-  longitude: Float
-  surcharge_amnt: Float
-  first_txn: Date
-  last_txn: Date
-  last_settled_txn: Date
-  last_balance: Float
-  store: JSON
+type Terminals {
+  logs: AtmLogs
+  info: [Terminal]
+  stats: AtmStats
+  errors: AtmErrors
 }
 
-type QuickStats {
-  daysAtZero: Int
-  todaysWDAmnt: Int
-  weekRevenue: Float
-  # revenue difference from last week
-  weekRevenueDifference: Float
-}
-
-type mainDashboardData {
-  message: String
-  #quickStats: QuickStats
+type AtmLogs {
+  daily: [DailyLog]
+  vaulting: [DailyLog]
 }
 
 type DailyLog {
@@ -68,9 +47,30 @@ type DailyLog {
   store: JSON
 }
 
-type AtmLogs {
-  daily: [DailyLog]
-  vaulting: [DailyLog]
+type Terminal {
+  terminalId: String
+  registered_owner: String
+  locationName: String
+  group: String
+  partner: String
+  address: String
+  city: String
+  state: String
+  zip: String
+  lattitude: Float
+  longitude: Float
+  surcharge_amnt: Float
+  first_txn: Date
+  last_txn: Date
+  last_settled_txn: Date
+  lastBalance: Float
+  store: JSON
+}
+
+type AtmStats {
+  daysAtZero: [DailyLog]
+  averages: [AtmStat]
+  totals: [AtmStat]
 }
 
 type AtmStat {
@@ -95,19 +95,28 @@ type AtmStat {
   vaultAmnt: Float
 }
 
-type AtmStats {
-  daysAtZero: [DailyLog]
-  averages: [AtmStat]
-  totals: [AtmStat]
+type AtmErrors {
+  errorLog: [AtmError]
+}
+
+type AtmError {
+  terminalId: String!
+  group: String
+  marketPartner: String
+  locationName: String
+  address: String
+  city: String
+  state: String
+  zip: String
+  errorTime: Date
+  errorCode: String
+  errorMessage: String
 }
 
 type App {
   # All the main endpoints for the app:
   accountID: String!
-  terminals: [Terminal]!
-  mainDashboardData: mainDashboardData
-  logs(startDate: Date, endDate: Date, tid: String, uid: String!): AtmLogs
-  atmStats(startDate: Date, endDate: Date, tid: String, uid: String!): AtmStats
+  terminals(startDate: Date, endDate: Date, tid: String, uid: String!): Terminals
 }
 
 

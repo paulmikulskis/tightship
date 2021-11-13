@@ -9,6 +9,7 @@ import CardContent from '@mui/material/CardContent';
 import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import { useQuery, gql } from "@apollo/client";
+import HomeDock from './HomeDock'
 import WDTxnStatCard from '../StatCard/WDTxnStatCard';
 import DaysAtZero from '../StatCard/DaysAtZero';
 import AtmHotlist from '../StatCard/AtmHotlist';
@@ -76,14 +77,16 @@ const HomeHero = styled(Card)`
 `;
 
 const WITHDRAWAL_STATS_QUERY = gql`
-    query Withdrawals($uid: String!, $start: Date) {
+    query Withdrawals($uid: String!) {
         app(uid: $uid) {
-            atmStats(uid: $uid, startDate: $start) {
-                totals {
-                    terminalId
-                    locationName
-                    wdTxAmnt
-                    wdTx
+            terminals(uid: $uid) {
+                stats {
+                    totals {
+                        terminalId
+                        locationName
+                        wdTx
+                        wdTxAmnt
+                    }
                 }
             }
         }
@@ -101,18 +104,17 @@ const Home = () => {
 
     if (loading) {
         return (
-            <p>Loading</p>
+            <p>Loading ;p</p>
         )
     }
     if (error) return <p>{error.toString()}</p>;
-    var totals = data.app.atmStats.totals
-    console.log(totals)
-    const total = totals.map(t => t.wdTxAmnt).reduce((a, b) => a + b)
+    var totals = data.app.terminals.stats.totals
+    console.log(data.app.terminals);
+    const totalWithdrawlAmnt = totals.map(t => t.wdTxAmnt).reduce((a, b) => a + b)
     const highestDraw = totals.map(t => [t.wdTxAmnt, t.locationName]).reduce((a, b) => {
         return a[0] > b[0] ? a : b
     })
-    const zeroDays = true;
-    console.log(`HIGHEST DRAW: ${JSON.stringify(highestDraw)}`)
+    //console.log(`HIGHEST DRAW: ${JSON.stringify(highestDraw)}`)
     return (
         <StyledHome>
             <PaperNav>
@@ -121,10 +123,11 @@ const Home = () => {
             <HomeHero>
                 <CardContent>
                     <h1>Hey there, {avatarname}</h1>
+                    <HomeDock />
                 </CardContent>
             </HomeHero>
             <CardStats>
-                <Center><WDTxnStatCard total={total} highestDraw={highestDraw}/></Center>
+                <Center><WDTxnStatCard total={totalWithdrawlAmnt} highestDraw={highestDraw}/></Center>
                 <Center><DaysAtZero /></Center>
                 <Center style={{'grid-column': '3/5'}}><AtmHotlist /></Center>
             </CardStats>

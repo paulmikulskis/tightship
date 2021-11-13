@@ -43,11 +43,12 @@ const Body = styled(CardContent)`
 export const DAYS_AT_ZERO_QUERY = gql`
     query DaysAtZero($uid: String!, $start: Date) {
         app(uid: $uid) {
-            atmStats(uid: $uid, startDate: $start) {
-                daysAtZero {
-                    balance
-                    terminalId
-                    log_date
+            terminals(uid: $uid, startDate: $start) {
+                stats {
+                    daysAtZero {
+                        terminalId
+                        log_date
+                    }
                 }
             }
         }
@@ -63,11 +64,11 @@ const DaysAtZero = () => {
         variables: { uid, start }
     });
 
-    if (loading) {
+    if (loading || error) {
         return <p>Loading...</p>;
     }
 
-    const daysAtZero = data.app.atmStats.daysAtZero.length;
+    const daysAtZero = data.app.terminals.stats.daysAtZero.length;
 
     return (
         <StyledCard elevation={6}>
