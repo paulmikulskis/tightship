@@ -4,8 +4,9 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
+import RaisableCard from './RaiseableCard';
 
-const StyledDockCard = styled(Card)`
+const StyledDockCard = styled(RaisableCard)`
     width: 100%;
     height: 100%;
     margin: 0 1rem;

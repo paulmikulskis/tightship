@@ -1,5 +1,5 @@
 import { createTheme } from '@mui/material/styles';
-import { green, grey, blue, red } from '@mui/material/colors';
+import { green, grey, blue, red, purple } from '@mui/material/colors';
 
 
 export const theme = createTheme({
@@ -13,6 +13,11 @@ export const theme = createTheme({
         light: 'rgba(128,222,234,0.46)',
         main: green[500],
         dark: green[700],
+      },
+      secondary: {
+        light: 'rgba(128,222,234,0.46)',
+        main: blue[400],
+        dark: blue[700],
       },
       grey: {
         light: grey[900],

@@ -3,10 +3,11 @@ import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
-import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
+import PrivacyTipIcon from '@mui/icons-material/PrivacyTip';
 import VerifiedUserIcon from '@mui/icons-material/VerifiedUser';
+import RaisableCard from './RaiseableCard';
 
-const StyledDockCard = styled(Card)`
+const StyledDockCard = styled(RaisableCard)`
     width: 100%;
     height: 100%;
     margin: 0 1rem;
@@ -77,8 +78,8 @@ const SuspiciousActivity = (props) => {
             <StyledDockCard elevation={1}>
                 <StyledDockCardContent>
                 <NoTerminalErrors>
-                    <h4>No Suspicious Activity Detected</h4>
-                    <p>today</p>
+                    <h4>No Suspicious Activity</h4>
+                    <p>detected today</p>
                 </NoTerminalErrors>
                     
                     <VerifiedUserIcon style={{fill: "green"}}/>
@@ -94,7 +95,7 @@ const SuspiciousActivity = (props) => {
         <StyledDockCard>
             <StyledDockCardContent>
                 <ErrorNotification>
-                    <NotificationImportantIcon style={{fill: "orange"}}/>
+                    <PrivacyTipIcon style={{fill: "orange"}}/>
                     <h3 style={{color: 'red'}}>{errorCount} errors</h3>
                 </ErrorNotification>
                 <MostRecentError>  

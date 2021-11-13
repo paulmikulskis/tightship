@@ -1,11 +1,13 @@
 import styled from 'styled-components';
+import { useState } from 'react';
 import Card from '@mui/material/Card';
 import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import CheckCircleIcon from '@mui/icons-material/CheckCircle';
 import NotificationImportantIcon from '@mui/icons-material/NotificationImportant';
+import RaisableCard from './RaiseableCard';
 
-const StyledDockCard = styled(Card)`
+const StyledDockCard = styled(RaisableCard)`
     width: 100%;
     height: 100%;
     margin: 0 1rem;
@@ -69,9 +71,11 @@ const NoTerminalErrors = styled.div`
 
 const ErrorsDock = (props) => {
     const errorLog = props.errorLog
+    
     if (errorLog.length == 0) {
         return (
-            <StyledDockCard elevation={1}>
+            <StyledDockCard 
+                elevation={1}>
                 <StyledDockCardContent>
                 <NoTerminalErrors>
                     <h3>No Terminal Errors</h3>

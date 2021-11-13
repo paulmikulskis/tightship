@@ -16,7 +16,7 @@ import { subQuarters, format } from 'date-fns';
 
 const StyledCard = styled(Card)`
     width: 100%;
-    height: 80%;
+    height: 100%;
     border-radius: 15px;
     display: flex;
     align-items: left;
@@ -51,6 +51,7 @@ const ConfigureAlertRules = () => {
     const user = useFirebaseAuth();
     const uid = user.uid;
     const alertRuleCount = 0;
+    const [raised, setRaised] = useState(false);
 
     // const { loading, error, data } = useQuery(DAYS_AT_ZERO_QUERY, {
     //     variables: { uid, start }
@@ -62,14 +63,18 @@ const ConfigureAlertRules = () => {
 
 
     return (
-        <StyledCard elevation={6}>
+        <StyledCard 
+            elevation={raised ? 6 : 0}
+            onMouseOver={()=>setRaised(true)} 
+            onMouseOut={()=>setRaised(false)} 
+        >
             <Body>
                 <h3>View Alerting Rules</h3>
                 <p>Current running alert rules: {alertRuleCount}</p>
                 <p style={{visibility: 'hidden'}}>Hidden</p>
             </Body>
             <CallToAction>
-                <Button variant="contained" size="small" endIcon={<NotificationsActiveIcon />}>Configure Alerting</Button>
+                <Button color="secondary" variant={raised ? 'contained' : 'outlined'} size="small" endIcon={<NotificationsActiveIcon />}>Configure Alerting</Button>
             </CallToAction>
 
         </StyledCard>

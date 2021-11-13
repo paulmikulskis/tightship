@@ -16,7 +16,7 @@ import { subQuarters, format } from 'date-fns';
 
 const StyledCard = styled(Card)`
     width: 100%;
-    height: 80%;
+    height: 100%;
     border-radius: 15px;
     display: flex;
     align-items: left;
@@ -50,6 +50,8 @@ const CallToAction = styled(CardActions)`
 const PullNewData = () => {
     const user = useFirebaseAuth();
     const uid = user.uid;
+    const [raised, setRaised] = useState(false);
+
 
     // const { loading, error, data } = useQuery(DAYS_AT_ZERO_QUERY, {
     //     variables: { uid, start }
@@ -61,13 +63,17 @@ const PullNewData = () => {
 
 
     return (
-        <StyledCard elevation={6}>
+        <StyledCard 
+            elevation={raised ? 6 : 0}
+            onMouseOver={()=>setRaised(true)} 
+            onMouseOut={()=>setRaised(false)} 
+            >
             <Body>
                 <h3>Synchronize Data</h3>
                 <p>Connect right to our data engine and pull the latest data from your ATM processors</p>
             </Body>
             <CallToAction>
-                <Button variant="contained" size="small" endIcon={<SyncIcon />}>Engage APIs Now</Button>
+                <Button color="secondary" variant={raised ? 'contained' : 'outlined'} size="small" endIcon={<SyncIcon />}>Engage APIs Now</Button>
             </CallToAction>
 
         </StyledCard>

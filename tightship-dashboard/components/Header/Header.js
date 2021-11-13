@@ -2,7 +2,13 @@ import { useState, useEffect } from 'react'
 import { useFirebaseAuth } from "../Authentication/FirebaseAuthProvider";
 import { useRouter } from 'next/router';
 import styled from 'styled-components';
+import Button from '@mui/material/Button';
 import Logout from '../Authentication/Logout';
+
+
+const TightShipHomeButton = styled(Button)`
+
+`;
 
 
 const StyledHeader = styled.div`
@@ -14,7 +20,6 @@ const StyledHeader = styled.div`
 
 
     button {
-        width: 150px;
         height: 30px;
     }
 `;
@@ -54,7 +59,7 @@ const Header = (props) => {
                 <h3>TightShip</h3>
             </HeaderLeft>
             <HeaderRight>
-                <button type="button" onClick={() => router.push('/')}>Go to TightShip home</button>
+                <TightShipHomeButton type="button" onClick={() => router.push('/')} variant="contained">TightShip home</TightShipHomeButton>
                 <div style={{padding: '0 0.5rem 0 0.5rem'}}><Logout width="150px" height="30px"/></div>
                 <h3 style={{visibility: 'hidden'}}>p</h3>
             </HeaderRight>

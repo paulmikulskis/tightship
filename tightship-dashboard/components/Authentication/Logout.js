@@ -4,9 +4,10 @@ import styled from 'styled-components';
 import { useFirebaseAuth } from "./FirebaseAuthProvider";
 import FormItem from './Login'
 import { useRouter } from 'next/router';
+import Button from '@mui/material/Button';
 
 
-const SignOut = styled.button`
+const SignOut = styled(Button)`
     height: ${props => props.height ? props.height : '2.75rem'};
     width: ${props => props.width ? props.width : '100%'};
 `;
@@ -34,6 +35,8 @@ const Logout = (props) => {
             width={props.width} 
             height={props.height} 
             onClick={signOutUser}
+            variant='contained'
+            color='primary'
             >Sign out</SignOut>
     } else {
         return <div></div>;

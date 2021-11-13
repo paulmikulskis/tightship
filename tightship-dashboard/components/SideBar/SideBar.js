@@ -7,7 +7,14 @@ import Logout from '../Authentication/Logout';
 import { BrowserRouter as Router, Switch, Route, Link, useHistory } from 'react-router-dom';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
-
+import HomeIcon from '@mui/icons-material/Home';
+import ShareIcon from '@mui/icons-material/Share';
+import MapIcon from '@mui/icons-material/Map';
+import MonetizationOnIcon from '@mui/icons-material/MonetizationOn';
+import ListAltIcon from '@mui/icons-material/ListAlt';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import LogoutIcon from '@mui/icons-material/Logout';
+import DashboardIcon from '@mui/icons-material/Dashboard';
 
 const StyledSideBar = styled.div`
     height: 100%;
@@ -77,13 +84,14 @@ const SideBar = () => {
             <ButtonGroup
             orientation="vertical"
             aria-label="vertical outlined button group">
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app')} style={{padding: "1rem", justifyContent: "flex-start"}}>Home</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/connections')} style={{padding: "1rem", justifyContent: "flex-start"}}>Connections</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Mapping</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Vaulting</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Data</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Account</SideBarButton>
-                <SideBarButton color='secondary' variant="text" onClick={signOutUser} style={{padding: "1rem", justifyContent: "flex-start"}}>Logout</SideBarButton>
+                <SideBarButton endIcon={<HomeIcon />} color='secondary' variant="text" onClick={() => history.replace('/app')} style={{padding: "1rem", justifyContent: "flex-start"}}>Home</SideBarButton>
+                <SideBarButton endIcon={<DashboardIcon />} color='secondary' variant="text" onClick={() => history.replace('/app')} style={{padding: "1rem", justifyContent: "flex-start"}}>Dashboard</SideBarButton>
+                <SideBarButton endIcon={<ShareIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/connections')} style={{padding: "1rem", justifyContent: "flex-start"}}>Connections</SideBarButton>
+                <SideBarButton endIcon={<MapIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Mapping</SideBarButton>
+                <SideBarButton endIcon={<MonetizationOnIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Vaulting</SideBarButton>
+                <SideBarButton endIcon={<ListAltIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Data</SideBarButton>
+                <SideBarButton endIcon={<AccountCircleIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Account</SideBarButton>
+                <SideBarButton endIcon={<LogoutIcon />} color='secondary' variant="text" onClick={signOutUser} style={{padding: "1rem", justifyContent: "flex-start"}}>Logout</SideBarButton>
             </ButtonGroup>
             </MenuContainer>
 

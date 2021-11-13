@@ -10,13 +10,13 @@ import Button from '@mui/material/Button';
 import Typography from '@mui/material/Typography';
 import Box from '@mui/material/Box';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
-import SendIcon from '@mui/icons-material/Send';
+import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import { useQuery, gql } from "@apollo/client";
 import { subQuarters, format } from 'date-fns';
 
 const StyledCard = styled(Card)`
     width: 100%;
-    height: 80%;
+    height: 100%;
     border-radius: 15px;
     display: flex;
     align-items: left;
@@ -50,6 +50,7 @@ const CallToAction = styled(CardActions)`
 const ContactVaulters = () => {
     const user = useFirebaseAuth();
     const uid = user.uid;
+    const [raised, setRaised] = useState(false);
 
     // const { loading, error, data } = useQuery(DAYS_AT_ZERO_QUERY, {
     //     variables: { uid, start }
@@ -61,13 +62,18 @@ const ContactVaulters = () => {
 
 
     return (
-        <StyledCard elevation={6}>
+        <StyledCard 
+            elevation={raised ? 6 : 0}
+            onMouseOver={()=>setRaised(true)} 
+            onMouseOut={()=>setRaised(false)} 
+            >
             <Body>
                 <h3>Text My Vaulters</h3>
                 <p>Send an a balance update to all registered vaulters</p>
+                <p style={{visibility: 'hidden'}}>Hidden</p>
             </Body>
             <CallToAction>
-                <Button variant="contained" size="small" endIcon={<SendIcon />}>send blast SMS</Button>
+                <Button color="secondary" variant={raised ? 'contained' : 'outlined'} size="small" endIcon={<PhoneIphoneIcon />}>send blast SMS</Button>
             </CallToAction>
 
         </StyledCard>

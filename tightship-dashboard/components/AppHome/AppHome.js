@@ -41,9 +41,9 @@ const StyledHome = styled.div`
     grid-template-rows: 0.3fr 1.3fr 0.75fr 0.5fr;
     row-gap: 1rem;
     column-gap: 1rem;
-    padding: 1rem;
     margin: 1rem;
     height: 100%;  
+    padding: 1rem;
 `;
 
 const Center = styled.div`
@@ -79,6 +79,7 @@ const HomeHero = styled(Card)`
     flex-direction: row;
     align-items: center;
     justify-content: center;
+    border-radius: 15px;
 `;
 
 const HomeHeroContent = styled(CardContent)`
@@ -132,28 +133,30 @@ const Home = () => {
     })
     //console.log(`HIGHEST DRAW: ${JSON.stringify(highestDraw)}`)
     return (
-        <StyledHome>
-            <PaperNav>
-                <AppSearch />
-            </PaperNav>
-            <HomeHero>
-                <HomeHeroContent>
-                    <h1>Hey there, {avatarname}</h1>
-                    <StyledHomeDock>
-                        <HomeDock />
-                    </StyledHomeDock>
-                </HomeHeroContent>
-            </HomeHero>
-            <CardStats>
-                <Center><WDTxnStatCard total={totalWithdrawlAmnt} highestDraw={highestDraw}/></Center>
-                <Center><DaysAtZero /></Center>
-                <Center style={{'grid-column': '3/5'}}><AtmHotlist /></Center>
-            </CardStats>
-            <PullNewData />
-            <ContactVaulters />
-            <ConfigureAlertRules />
-            <GotoDashboard />
-        </StyledHome>
+        <div style={{'padding-bottom': '1rem'}}>
+            <StyledHome>
+                <PaperNav>
+                    <AppSearch />
+                </PaperNav>
+                <HomeHero raised={false}>
+                    <HomeHeroContent>
+                        <h1>Hey there, {avatarname}</h1>
+                        <StyledHomeDock>
+                            <HomeDock />
+                        </StyledHomeDock>
+                    </HomeHeroContent>
+                </HomeHero>
+                <CardStats>
+                    <Center><WDTxnStatCard total={totalWithdrawlAmnt} highestDraw={highestDraw}/></Center>
+                    <Center><DaysAtZero /></Center>
+                    <Center style={{'grid-column': '3/5'}}><AtmHotlist /></Center>
+                </CardStats>
+                <PullNewData />
+                <ContactVaulters />
+                <ConfigureAlertRules />
+                <GotoDashboard />
+            </StyledHome>
+        </div>
     )
 }
 
