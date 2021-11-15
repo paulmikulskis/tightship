@@ -144,7 +144,7 @@ export const getTerminalTotals = async (driver, startDate=subDays(new Date(), 7)
   }
   // construct a new array which is a unique set of terminal_ids,
   // which we then map to an array of AtmStat types for GraphQL
-  console.log(logs)
+  //console.log(logs)
   return [...new Set(
     logs.map((log) => {
       return log.terminal_id
@@ -205,7 +205,7 @@ export const getUserTerminals = async (driver, uid) => {
   };
 
 
-export const getDailyLogsWithVault = async (driver, startDate=subDays(new Date(), 7), endDate=new Date(), tid=undefined, uid) => {
+export const getDailyLogsWithVault = async (driver, startDate=subDays(new Date(), 28), endDate=new Date(), tid=undefined, uid) => {
   logger.debug(
     `getting days that terminal ${tid==undefined ? "[ALL TERMINALS]" : tid} was vaulted between ${format(startDate, 'MM/dd/yyyy')} and ${format(endDate, 'MM/dd/yyyy')}`
     );
@@ -215,9 +215,9 @@ export const getDailyLogsWithVault = async (driver, startDate=subDays(new Date()
       .from('daily_atm')
       .modify( (thisQuery) => {
         if (tid) {
-          thisQuery.where('terminal_id', tid);
-        }
-      })  
+          return thisQuery.where('terminal_id', tid);
+        } else return thisQuery
+      })
       .whereBetween('log_date', [startDate, endDate])
       .where('vault_amnt', '>', 0)
     logger.debug('finished getDailyLogsWithVault query', result.map(item => item.terminal_id))
@@ -352,9 +352,10 @@ export const getTerminalDailyLogs = async (driver, startDate=subDays(new Date(),
         if (tid) {
           thisQuery.where('terminal_id', tid);
         }
-      })  
-      .whereBetween('log_date', [startDate, endDate])
+      })
+      .whereBetween( 'log_date', [startDate, endDate] )
     logger.debug('finished getTerminalDailyLogs query', [...new Set(result.map(item => item.terminal_id))])
+    // /console.log(result)
     return result;
   } catch (err) {
     logger.error(`query error: for getTerminalDailyLogs on terminal_id=${tid}\n`, err)

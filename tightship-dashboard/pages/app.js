@@ -8,6 +8,7 @@ import SideBar from '../components/SideBar/SideBar';
 import AppHome from '../components/AppHome/AppHome';
 import Connections from '../components/Conections/Connections';
 import Account from '../components/Account/Account';
+import Dashboard from '../components/Dashboard/Dashboard';
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
@@ -109,6 +110,9 @@ const app = () => {
                     <GridSideBar sx={{backgroundColor: sidebarsBackgroundColor}}><SideBar /></GridSideBar>
                     <Paper elevation={6}>
                     <Switch>
+                        <Route path="/app/dashboard">
+                            <Dashboard sx={{backgroundColor: appBackgroundColor}}/>
+                        </Route>
                         <Route path="/app/connections">
                             <GridAppHome sx={{backgroundColor: appBackgroundColor}}><Connections /></GridAppHome>
                         </Route>

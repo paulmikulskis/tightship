@@ -1,4 +1,4 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect } from 'react';
 import { useFirebaseAuth } from "../Authentication/FirebaseAuthProvider";
 import { getAuth, signOut } from "firebase/auth";
 import { useRouter } from 'next/router';
@@ -83,9 +83,10 @@ const SideBar = () => {
 
             <ButtonGroup
             orientation="vertical"
-            aria-label="vertical outlined button group">
+            aria-label="vertical outlined button group"
+            style={{'padding-left': '0.5rem'}}>
                 <SideBarButton endIcon={<HomeIcon />} color='secondary' variant="text" onClick={() => history.replace('/app')} style={{padding: "1rem", justifyContent: "flex-start"}}>Home</SideBarButton>
-                <SideBarButton endIcon={<DashboardIcon />} color='secondary' variant="text" onClick={() => history.replace('/app')} style={{padding: "1rem", justifyContent: "flex-start"}}>Dashboard</SideBarButton>
+                <SideBarButton endIcon={<DashboardIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/dashboard')} style={{padding: "1rem", justifyContent: "flex-start"}}>Dashboard</SideBarButton>
                 <SideBarButton endIcon={<ShareIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/connections')} style={{padding: "1rem", justifyContent: "flex-start"}}>Connections</SideBarButton>
                 <SideBarButton endIcon={<MapIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Mapping</SideBarButton>
                 <SideBarButton endIcon={<MonetizationOnIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Vaulting</SideBarButton>

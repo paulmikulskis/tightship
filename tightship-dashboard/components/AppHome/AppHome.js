@@ -126,11 +126,11 @@ const Home = () => {
     }
     if (error) return <p>{error.toString()}</p>;
     var totals = data.app.terminals.stats.totals
-    console.log(data.app.terminals);
-    const totalWithdrawlAmnt = totals.map(t => t.wdTxAmnt).reduce((a, b) => a + b)
+    //console.log(data.app.terminals);
+    const totalWithdrawlAmnt = totals.map(t => t.wdTxAmnt).reduce((a, b) => a + b, 0)
     const highestDraw = totals.map(t => [t.wdTxAmnt, t.locationName]).reduce((a, b) => {
         return a[0] > b[0] ? a : b
-    })
+    }, [0, 'no data'])
     //console.log(`HIGHEST DRAW: ${JSON.stringify(highestDraw)}`)
     return (
         <div style={{'padding-bottom': '1rem'}}>

@@ -34,6 +34,8 @@ const destructureDailyLogs = (logs) => {
                 store: log.store
             };
         });
+        //console.log('LOG ARRAY:', logArray)
+
         return logArray;
     } else return null;
 }
@@ -107,7 +109,6 @@ const terminalErrorLogsFunction = async (startDate, endDate, tid, uid) => {
     const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
     const end = endDate ? new Date(endDate) : new Date();
     const errs = await Postgres.getUserTerminalErrors(Postgres.db, start, end, tid, uid);
-    console.log('ERRS:', errs)
     return destructureErrorLogs(errs);
 }
 
@@ -151,14 +152,15 @@ const dailyLogsFunction = async (startDate, endDate, tid, uid) => {
         tid,
         uid
     );
+    console.log('DAIL LOGS', logs)
     return destructureDailyLogs(logs);
 
 };
 
 
-const vaultingLogFunction = async (tid, startDate, endDate, uid) => {
-    const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
-    const end = endDate ? new Date(endDate) : new Date();
+const vaultingLogFunction = async (startDate, endDate, tid, uid) => {
+    const start = startDate ? startDate : subDays(new Date(), 30);
+    const end = endDate ? endDate : new Date();
     const days = await Postgres.getDailyLogsWithVault(
         Postgres.db,
         start, 
@@ -166,6 +168,7 @@ const vaultingLogFunction = async (tid, startDate, endDate, uid) => {
         tid,
         uid
     );
+    console.log('VAULTING DAYS:', days)
     return destructureDailyLogs(days)
 }
 
