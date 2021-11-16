@@ -9,16 +9,14 @@ import AppHome from '../components/AppHome/AppHome';
 import Connections from '../components/Conections/Connections';
 import Account from '../components/Account/Account';
 import Dashboard from '../components/Dashboard/Dashboard';
+import MappingHome from '../components/Mapping/MappingHome';
+
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
 import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { useFirebaseUserInfo } from '../components/Authentication/FirebaseUserInfoProvider';
-import { shadows } from '@mui/system';
-import UserInfoSetter from '../components/Authentication/UserInfoSetter'
-
-import { FirebaseUserInfoProvider } from '../components/Authentication/FirebaseUserInfoProvider'
 
 
 const StyledHome = styled(Box)`
@@ -118,6 +116,9 @@ const app = () => {
                         </Route>
                         <Route path="/app/account">
                             <Account sx={{backgroundColor: appBackgroundColor}}/>
+                        </Route>
+                        <Route path="/app/mapping">
+                            <MappingHome sx={{backgroundColor: appBackgroundColor}}/>
                         </Route>
                         <Route path="/app">
                             <GridAppHome sx={{backgroundColor: appBackgroundColor}}><AppHome /></GridAppHome>

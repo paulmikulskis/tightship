@@ -7,6 +7,7 @@ gcloud-key.json
 .pnp.js
 .log
 .postgres_persist/
+.postgres/
 # testing
 /coverage
 
@@ -40,3 +41,5 @@ yarn-error.log*
 firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
+fire-storage/.postgres_persist/pg_stat_tmp/db_0.stat
+fire-storage/.postgres_persist/pg_stat_tmp/global.stat

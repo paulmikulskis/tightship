@@ -88,7 +88,7 @@ const SideBar = () => {
                 <SideBarButton endIcon={<HomeIcon />} color='secondary' variant="text" onClick={() => history.replace('/app')} style={{padding: "1rem", justifyContent: "flex-start"}}>Home</SideBarButton>
                 <SideBarButton endIcon={<DashboardIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/dashboard')} style={{padding: "1rem", justifyContent: "flex-start"}}>Dashboard</SideBarButton>
                 <SideBarButton endIcon={<ShareIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/connections')} style={{padding: "1rem", justifyContent: "flex-start"}}>Connections</SideBarButton>
-                <SideBarButton endIcon={<MapIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Mapping</SideBarButton>
+                <SideBarButton endIcon={<MapIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/mapping')} style={{padding: "1rem", justifyContent: "flex-start"}}>Mapping</SideBarButton>
                 <SideBarButton endIcon={<MonetizationOnIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Vaulting</SideBarButton>
                 <SideBarButton endIcon={<ListAltIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Data</SideBarButton>
                 <SideBarButton endIcon={<AccountCircleIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Account</SideBarButton>
