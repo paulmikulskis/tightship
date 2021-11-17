@@ -6,7 +6,7 @@ gcloud-key.json
 /.pnp
 .pnp.js
 .log
-.postgres_persist/
+fire-storage/.postgres_persist/
 .postgres/
 # testing
 /coverage
