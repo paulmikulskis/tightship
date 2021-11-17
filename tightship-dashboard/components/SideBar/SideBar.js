@@ -89,7 +89,7 @@ const SideBar = () => {
                 <SideBarButton endIcon={<DashboardIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/dashboard')} style={{padding: "1rem", justifyContent: "flex-start"}}>Dashboard</SideBarButton>
                 <SideBarButton endIcon={<ShareIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/connections')} style={{padding: "1rem", justifyContent: "flex-start"}}>Connections</SideBarButton>
                 <SideBarButton endIcon={<MapIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/mapping')} style={{padding: "1rem", justifyContent: "flex-start"}}>Mapping</SideBarButton>
-                <SideBarButton endIcon={<MonetizationOnIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Vaulting</SideBarButton>
+                <SideBarButton endIcon={<MonetizationOnIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/vaulting')} style={{padding: "1rem", justifyContent: "flex-start"}}>Vaulting</SideBarButton>
                 <SideBarButton endIcon={<ListAltIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Data</SideBarButton>
                 <SideBarButton endIcon={<AccountCircleIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/account')} style={{padding: "1rem", justifyContent: "flex-start"}}>Account</SideBarButton>
                 <SideBarButton endIcon={<LogoutIcon />} color='secondary' variant="text" onClick={signOutUser} style={{padding: "1rem", justifyContent: "flex-start"}}>Logout</SideBarButton>
