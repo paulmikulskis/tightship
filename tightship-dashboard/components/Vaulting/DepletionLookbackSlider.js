@@ -99,7 +99,7 @@ const DepletionLookbackSlider = () => {
             </SliderHeading>
             <Slider
                 aria-label="Depletion Lookback"
-                defaultValue={1}
+                defaultValue={5}
                 valueLabelFormat={v => <SliderLabel>{marks.filter(i => i.value == v)[0].label}</SliderLabel>}
                 valueLabelDisplay="auto"
                 marks={marks}

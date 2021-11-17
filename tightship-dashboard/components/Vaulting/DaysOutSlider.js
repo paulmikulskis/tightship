@@ -91,7 +91,7 @@ const DaysOutSlider = () => {
             </SliderHeading>
             <Slider
                 aria-label="Days Out"
-                defaultValue={1}
+                defaultValue={14}
                 valueLabelFormat={v => <SliderLabel>{v} days</SliderLabel>}
                 valueLabelDisplay="auto"
                 marks={marks}

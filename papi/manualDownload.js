@@ -19,9 +19,9 @@ if (report) {
     //     rep[key]['Trx Time'] = formatISO9075(  new Date(rep[key]['Trx Time']).setHours(0, 0, 0, 0)  )
     // }
     
-    report.print()
-    //let data = JSON.stringify(report.to_json());
-    //fs.writeFileSync(`${arg.replace(/[ ]+/g,"_").toLocaleLowerCase()}-MOCK.json`, data);
+    //report.print()
+    let data = JSON.stringify(report.to_json());
+    fs.writeFileSync(`${arg.replace(/[ ]+/g,"_").toLocaleLowerCase()}-MOCK.json`, data);
     
 
 
