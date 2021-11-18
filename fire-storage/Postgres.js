@@ -2,7 +2,7 @@ import { config } from 'tightship-config';
 import knex from 'knex'
 import Nominatim from 'nominatim-geocoder';
 import { logger } from '../papi/logger.js'
-import { subDays, addDays, format, formatISO9075 } from 'date-fns';
+import { subDays, subMonths, addDays, format, formatISO9075, getISODay, eachDayOfInterval } from 'date-fns';
 
 // used when checking the return types of certain dictionaries
 // that are assumed to be mostly numeric
@@ -80,64 +80,83 @@ export const createUser = async (driver, uid, displayName, email, acct_type, sto
   };
 
 
-export const getTerminalAverages = async (driver, startDate, endDate, tid, uid) => {
+export const getTerminalAverages = async (driver, startDate, endDate, dayOfWeek, tid, uid) => {
   console.log(`tid=${tid}, startDate=${startDate}, endDate=${endDate}`)
-  const logs = await getTerminalDailyLogs(driver, startDate, endDate, tid, uid);
+  var logs = await getTerminalDailyLogs(driver, startDate, endDate, dayOfWeek, tid, uid);
+  const addedData = await getTerminalDailyLogs(driver, subMonths(new Date(), 4), endDate, undefined, undefined, uid)
+  //console.log(`all time data = ${JSON.stringify(addedData, null, 3)}`)
   const atms = await getUserTerminals(driver, uid)
   if (!logs || !atms) {
     return []
   };
-  // construct a new array which is a unique set of terminal_ids,
-  // which we then map to an array of AtmStat types for GraphQL
-  return [...new Set(
+  const logTids = [...new Set(
     logs.map((log) => {
       return log.terminal_id
     })
-  )]
-  .map(terminal_id => {
-    const ls = logs.filter((log) => log.terminal_id==terminal_id);
-    const at = atms.filter((a) => a.terminal_id==terminal_id)[0];
-    //console.log(`LS for ${terminal_id}, ${ls.map(l => JSON.stringify(l, null, 2))}`)
-    const ret = {
-      terminalId: terminal_id,
-      locationName: at.location_name,
-      lattitude: at.lattitude,
-      longitude: at.longitude,
-      surchageAmnt: at.surcharge_amnt,
-      totalTx: ls.map(log => log.total_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      balance: ls.map(log => log.balance).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      wdTx: ls.map(log => log.wd_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      wdTxAmnt: ls.map(log => log.wd_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      nwdTx: ls.map(log => log.nwd_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      envelopeDepositTx: ls.map(log => log.envelope_deposit_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      envelopeDepositTxAmnt: ls.map(log => log.envelope_deposit_txn_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      checkDepositTx: ls.map(log => log.check_deposit_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      checkDepositTxAmnt: ls.map(log => log.check_deposit_txn_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      cashDepositTx: ls.map(log => log.cash_deposit_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      cashDepositTxAmnt: ls.map(log => log.cash_deposit_txn_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      depositTx: ls.map(log => log.deposit_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      depositTxAmnt: ls.map(log => log.deposit_txn_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
-      vaultAmnt: ls.map(log => log.vault_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+  )];
+  const userTids = [...new Set(
+    atms.map((a) => {
+      return a.terminal_id
+    })
+  )];
+  console.log(`TERMINAL AVERAGES ON TERMINALS ${logTids} from user ATM list:\n${atms.map(a => a.terminal_id)} on ${dayOfWeek}`)
+  for (var a of atms) {
+    if (logTids.indexOf(a.terminal_id) < 0) {
+      console.log(`terminal ${a.terminal_id} not found in the daily logs pulled in time range`);
+      const allTimeData = addedData.filter(d => {
+        return d.terminal_id == a.terminal_id;
+      });
+      logs.push(...allTimeData);
+      console.log(`added data: ${JSON.stringify(allTimeData, null, 3)}`)
     };
-    // in case there was an error in the logs, we still need to make sure
-    // that the 'NaN' from NodeJS gets turned into a datatype that can be converted
-    // to a float, since every 'averages' fieldtype in GraphQL schema is type Float
-    Object.keys(ret).map( (key, index)  => {
-      if (
-        (parseFloat(ret[key]).toString() === 'NaN') &&
-        (nonNumericFields.indexOf(key) < 0)
-        ) {
-        ret[key] = null;
+  };
+  // construct a new array which is a unique set of terminal_ids,
+  // which we then map to an array of AtmStat types for GraphQL
+  return userTids
+    .map(terminal_id => {
+      const ls = logs.filter((log) => log.terminal_id==terminal_id);
+      const at = atms.filter((a) => a.terminal_id==terminal_id)[0];
+      //console.log(`LS for ${terminal_id}, ${ls.map(l => JSON.stringify(l, null, 2))}`)
+      const ret = {
+        terminalId: terminal_id,
+        locationName: at.location_name,
+        lattitude: at.lattitude,
+        longitude: at.longitude,
+        surchageAmnt: at.surcharge_amnt,
+        totalTx: ls.map(log => log.total_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        balance: ls.map(log => log.balance).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        wdTx: ls.map(log => log.wd_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        wdTxAmnt: ls.map(log => log.wd_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        nwdTx: ls.map(log => log.nwd_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        envelopeDepositTx: ls.map(log => log.envelope_deposit_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        envelopeDepositTxAmnt: ls.map(log => log.envelope_deposit_txn_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        checkDepositTx: ls.map(log => log.check_deposit_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        checkDepositTxAmnt: ls.map(log => log.check_deposit_txn_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        cashDepositTx: ls.map(log => log.cash_deposit_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        cashDepositTxAmnt: ls.map(log => log.cash_deposit_txn_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        depositTx: ls.map(log => log.deposit_txn).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        depositTxAmnt: ls.map(log => log.deposit_txn_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
+        vaultAmnt: ls.map(log => log.vault_amnt).reduce((a,b) => (a + parseFloat(b))) / ls.length,
       };
+      // in case there was an error in the logs, we still need to make sure
+      // that the 'NaN' from NodeJS gets turned into a datatype that can be converted
+      // to a float, since every 'averages' fieldtype in GraphQL schema is type Float
+      Object.keys(ret).map( (key, index)  => {
+        if (
+          (parseFloat(ret[key]).toString() === 'NaN') &&
+          (nonNumericFields.indexOf(key) < 0)
+          ) {
+          ret[key] = null;
+        };
+      });
+      return ret;
     });
-    return ret;
-  });
 };
 
 
-export const getTerminalTotals = async (driver, startDate=subDays(new Date(), 7), endDate=new Date(), tid, uid) => {
+export const getTerminalTotals = async (driver, startDate=subDays(new Date(), 7), endDate=new Date(), dayOfWeek, tid, uid) => {
   //console.log(`tid=${tid}, startDate=${startDate}, endDate=${endDate}`)
-  const logs = await getTerminalDailyLogs(driver, startDate, endDate, tid);
+  const logs = await getTerminalDailyLogs(driver, startDate, endDate, dayOfWeek, tid);
   const atms = await getUserTerminals(driver, uid)
   if (!logs) {
     return []
@@ -340,7 +359,7 @@ export const getDailyLogsWithZeroBalance = async (driver, startDate=subDays(new 
 }
 
 
-export const getTerminalDailyLogs = async (driver, startDate=subDays(new Date(), 7), endDate=new Date(), tid=undefined, uid) => {
+export const getTerminalDailyLogs = async (driver, startDate=subDays(new Date(), 7), endDate=new Date(), dayOfWeek=undefined, tid=undefined, uid) => {
   logger.debug(
     `getting terminal logs for ${tid==undefined ? "[ALL TERMINALS]" : tid} from ${format(startDate, 'MM/dd/yyyy')}-${format(endDate, 'MM/dd/yyyy')}`
     );
@@ -352,6 +371,15 @@ export const getTerminalDailyLogs = async (driver, startDate=subDays(new Date(),
         if (tid) {
           thisQuery.where('terminal_id', tid);
         }
+      })
+      .modify( (thisQuery) => {
+        // dayOfWeek as according to the GraphQL schemastring is Int in range(1,7)
+        if (dayOfWeek !== undefined) {
+          const dateArray = eachDayOfInterval({ start: startDate, end: endDate }).filter(day => {
+            return getISODay(day) == dayOfWeek
+          });
+          thisQuery.whereIn('log_date', dateArray)
+        };
       })
       .whereBetween( 'log_date', [startDate, endDate] )
     logger.debug('finished getTerminalDailyLogs query', [...new Set(result.map(item => item.terminal_id))])

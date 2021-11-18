@@ -128,7 +128,7 @@ const SelectCrumbs = (props) => {
                 elevation={0} 
                 sx={{
                     backgroundColor: theme.palette.background.default,
-                    border: '2px solid',
+                    border: '1px solid',
                     borderColor: theme.palette.grey.dark,
                     borderRadius: '10px'
                 }}

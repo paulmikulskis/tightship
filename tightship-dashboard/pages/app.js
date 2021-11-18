@@ -107,7 +107,7 @@ const app = () => {
                 <StyledHome>
                     <GridHeader sx={{backgroundColor: headBackgroundColor}}><Header /></GridHeader>
                     <GridSideBar sx={{backgroundColor: sidebarsBackgroundColor}}><SideBar /></GridSideBar>
-                    <Paper elevation={6}>
+                    <Paper elevation={3}>
                     <Switch>
                         <Route path="/app/dashboard">
                             <Dashboard sx={{backgroundColor: appBackgroundColor}}/>

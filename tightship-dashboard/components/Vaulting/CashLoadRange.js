@@ -11,7 +11,7 @@ import DialogTitle from '@mui/material/DialogTitle';
 import Dialog from '@mui/material/Dialog';
 
 
-const StyledGranularitySlider = styled(Box)`
+const StyledCashLoadRangeSlider = styled(Box)`
     width: 100%;
     padding: 0rem 2rem 0 0;
     grid-column: 1/3;
@@ -34,55 +34,71 @@ const SliderHeading = styled(Stack)`
     }
 `;
 
-const BandGranularitySlider = (props) => {
+const CashLoadRange = (props) => {
 
-    const [granularityHelpModal, setGranularityHelpModal] = useState(false);
-    const [bandGranularity, setBandGranularity] = props.bandGranularity;
+    const [cashLoadHelpModal, setCashLoadHelpModal] = useState(false);
+    const [value, setValue] = useState([500,9000]);
+    const [cashLoadRange, setCashLoadRange] = props.cashLoadRange;
 
     const marks = [
         {
           value: 0,
-          label: '$2,000',
+          label: '$0',
         },
         {
-          value: 50,
-          label: '$1,500',
+          value: 500,
+          label: '$100',
         },
         {
-          value: 100,
-          label: '$1,000',
-        },
-        {
-          value: 150,
+          value: 1300,
           label: '$500',
         },
         {
-            value: 180,
-            label: '$20',
+          value: 2500,
+          label: '$1,000',
         },
         {
-            value: 200,
-            label: '$1',
+            value: 4000,
+            label: '$3,000',
+        },
+        {
+            value: 5500,
+            label: '$5,000',
+        },
+        {
+            value: 7000,
+            label: '$7,000',
+        },
+        {
+            value: 9000,
+            label: '$10,000',
+        },
+        {
+            value: 12000,
+            label: '$15,000',
         },
           
-      ];
+    ];
       
     const handleClose = () => {
-        setGranularityHelpModal(!granularityHelpModal)
+        setCashLoadHelpModal(!cashLoadHelpModal)
     };
 
     const handleSliderChange = (event, newValue) => {
-        var labelf = marks.filter(m => m.value == newValue)[0].label;
-        labelf = parseFloat(labelf.replaceAll(',','').replaceAll('$', ''));
-        setBandGranularity(labelf);
+        var lowerBound = marks.filter(m => m.value == value[0])[0].label;
+        lowerBound = parseFloat(lowerBound.replaceAll(',','').replaceAll('$', ''));
+        var upperBound = marks.filter(m => m.value == value[1])[0].label;
+        upperBound = parseFloat(upperBound.replaceAll(',','').replaceAll('$', ''));
+        setCashLoadRange([lowerBound, upperBound]);
+        setValue(newValue);
     };
 
 
     return (
 
-        <StyledGranularitySlider>
+        <StyledCashLoadRangeSlider>
             <SliderHeading direction="row" spacing={1} >
-                <Box><h4>Cash Band Granularity</h4></Box>
+                <Box><h4>Allowable Terminal Load Range</h4></Box>
                 <Box><HelpIcon 
                     sx={{
                         marginTop: '0.05rem',
@@ -93,27 +109,27 @@ const BandGranularitySlider = (props) => {
                             fontSize: 'large'
                         }
                     }}
-                    onClick={() =>  setGranularityHelpModal(true)}
+                    onClick={() =>  setCashLoadHelpModal(true)}
                     />
                 </Box>
-                <Dialog onClose={handleClose} open={granularityHelpModal}>
+                <Dialog onClose={handleClose} open={cashLoadHelpModal}>
                     <Box sx={{padding: '1rem', maxWidth: '500px'}}>
-                        <p style={{'line-height': '1.5'}}><b>Cash Band Granularity</b> informs the Vaulting Tool of the minimum differential between ATM vaulting amounts.</p><br /><p>  Typically, restricting this value to $2,000 is favorable due to cash bundle size, but other values can potentially lead to further optimizations in vault planning.</p>
+                        <p style={{'line-height': '1.5'}}><b>Allowable Terminal Load Range</b> informs the Vaulting Tool The acceptable range of cash to allow into your terminals at any given point.</p>
                     </Box>
                 </Dialog>
             </SliderHeading>
             <Slider
-                aria-label="Band Granularity"
-                defaultValue={0}
                 valueLabelFormat={v => <SliderLabel>{marks.filter(i => i.value == v)[0].label}</SliderLabel>}
                 valueLabelDisplay="auto"
-                onChange={handleSliderChange}
                 marks={marks}
                 step={null}
                 min={0}
-                max={201}
+                max={12000}
+                value={value}
+                onChange={handleSliderChange}
+                disableSwap
             />
-        </StyledGranularitySlider>
+        </StyledCashLoadRangeSlider>
 
     )
 }
@@ -122,4 +138,4 @@ const BandGranularitySlider = (props) => {
 
 
 
-export default BandGranularitySlider
+export default CashLoadRange

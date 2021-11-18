@@ -15,21 +15,6 @@ import Calculator from './Calculator';
 
 
 
-const TERMINAL_BALANCES_QUERY = gql`
-    query TerminalBalancesQuery($uid: String!) {
-        app(uid: $uid) {
-            terminals(uid: $uid) {
-                info {
-                    terminalId
-                    locationName
-                    lastBalance
-                }
-            }
-        }
-    }
-`;
-
-
 const VaultingContainer = styled(Box)`
     padding: 2rem;
     margin: 1rem;
@@ -43,26 +28,12 @@ const VaultingContainer = styled(Box)`
 
 const Vaulting = () => {
 
-    const user = useFirebaseAuth();
-    const uid = user.uid;
-
-    const { loading, error, data } = useQuery(TERMINAL_BALANCES_QUERY,{
-        variables: { uid }
-    });
-
-    if (loading || error) {
-        return <p>Loading...{JSON.stringify(error)}</p>;
-    };
-
-    const balances = data.app.terminals.info;
-
-
     return (
         <VaultingContainer>
             <h1>Vaulting Tool</h1>
-            <p style={{'margin-top': '0', color: 'grey'}}>Iterate through vaulting plans instantly</p>
+            <p style={{'marginTop': '0', color: 'grey'}}>Iterate through vaulting plans instantly</p>
             <Divider variant="middle" />
-            <Calculator terminalData={balances}/>
+            <Calculator />
         </VaultingContainer>
     )
 }

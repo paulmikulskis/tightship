@@ -84,7 +84,7 @@ const SideBar = () => {
             <ButtonGroup
             orientation="vertical"
             aria-label="vertical outlined button group"
-            style={{'padding-left': '0.5rem'}}>
+            style={{'paddingLeft': '0.5rem'}}>
                 <SideBarButton endIcon={<HomeIcon />} color='secondary' variant="text" onClick={() => history.replace('/app')} style={{padding: "1rem", justifyContent: "flex-start"}}>Home</SideBarButton>
                 <SideBarButton endIcon={<DashboardIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/dashboard')} style={{padding: "1rem", justifyContent: "flex-start"}}>Dashboard</SideBarButton>
                 <SideBarButton endIcon={<ShareIcon />} color='secondary' variant="text" onClick={() => history.replace('/app/connections')} style={{padding: "1rem", justifyContent: "flex-start"}}>Connections</SideBarButton>

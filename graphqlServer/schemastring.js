@@ -71,6 +71,17 @@ type AtmStats {
   daysAtZero: [DailyLog]
   averages: [AtmStat]
   totals: [AtmStat]
+  transactionsByDay: DailyAverage
+}
+
+type DailyAverage {
+  monday: [AtmStat]
+  tuesday: [AtmStat]
+  wednesday: [AtmStat]
+  thursday: [AtmStat]
+  friday: [AtmStat]
+  saturday: [AtmStat]
+  sunday: [AtmStat]
 }
 
 type AtmStat {
@@ -123,6 +134,7 @@ type App {
     statsEndDate: Date,
     dailyLogsStartDate: Date,
     dailyLogsEndDate: Date,
+    dayOfWeek: Int,
     tid: String, 
     uid: String!
   ): Terminals

@@ -44,3 +44,8 @@ ui-debug.log*
 fire-storage/.postgres_persist/pg_stat_tmp/db_0.stat
 fire-storage/.postgres_persist/pg_stat_tmp/global.stat
 fire-storage/.postgres_persist/
+fire-storage/.postgres_persist/pg_stat_tmp/global.stat
+fire-storage/.postgres_persist/pg_stat_tmp/db_16384.stat
+fire-storage/.postgres_persist/pg_stat_tmp/db_0.stat
+fire-storage/.postgres_persist/global/pg_control
+fire-storage/.postgres_persist/base/16384/2619

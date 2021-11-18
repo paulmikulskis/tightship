@@ -14,6 +14,8 @@ import Dialog from '@mui/material/Dialog';
 const StyledDaysOutSlider = styled(Box)`
     padding: 0;
     width: 100%;
+    grid-column: 1/3;
+
 `;
 
 const SliderLabel = styled.p`
@@ -33,45 +35,24 @@ const SliderHeading = styled(Stack)`
     };
 `;
 
-const DepletionLookbackSlider = () => {
+const DepletionLookbackSlider = (props) => {
 
+    const marks = props.marks;
     const [depletionLookbackHelpModal, setDepletionLookbackHelpModal] = useState(false);
-      
+    const [sliderPosition, setSliderPostion] = useState(5);
+    const [transactionalLookback, setTransactionalLookback] = props.transactionalLookback
     const handleClose = () => {
         setDepletionLookbackHelpModal(!depletionLookbackHelpModal)
-    }
+    };
 
-    const marks = [
-        {
-            value: 1,
-            label: '1 Week'
-        },
-        {
-            value: 2,
-            label: '2 Weeks'
-        },
-        {
-            value: 3,
-            label: '3 Weeks'
-        },
-        {
-            value: 4,
-            label: '1 Month'
-        },
-        {
-            value: 5,
-            label: '1 Quarter'
-        },
-        {
-            value: 6,
-            label: '2 Quarters'
-        },
-        {
-            value: 7,
-            label: '1 Year'
-        },
+
+
+    const handleSliderChange = (event, newValue) => {
         
-    ];
+        const labelf = marks.filter(m => m.value == newValue)[0].date;
+        console.log(`depletion component lookback date = ${labelf}`)
+        setTransactionalLookback(labelf);
+    };
 
     return (
 
@@ -99,10 +80,11 @@ const DepletionLookbackSlider = () => {
             </SliderHeading>
             <Slider
                 aria-label="Depletion Lookback"
-                defaultValue={5}
+                defaultValue={marks.filter(m => m.date.getTime() == transactionalLookback.getTime())[0].value}
                 valueLabelFormat={v => <SliderLabel>{marks.filter(i => i.value == v)[0].label}</SliderLabel>}
                 valueLabelDisplay="auto"
                 marks={marks}
+                onChange={handleSliderChange}
                 step={null}
                 min={1}
                 max={7}

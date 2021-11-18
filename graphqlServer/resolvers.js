@@ -113,13 +113,14 @@ const terminalErrorLogsFunction = async (startDate, endDate, tid, uid) => {
 }
 
 
-const terminalAverages = async (startDate, endDate, tid, uid) => {
+const terminalAverages = async (startDate, endDate, dayOfWeek, tid, uid) => {
     const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
     const end = endDate ? new Date(endDate) : new Date();
     const averages = await Postgres.getTerminalAverages(
         Postgres.db,
         start,
         end,
+        dayOfWeek,
         tid,
         uid
     );
@@ -140,8 +141,31 @@ const terminalTotals = async (startDate, endDate, tid, uid) => {
     return totals;
 };
 
+const transactionsByDayFunction = async (startDate, endDate, tid, uid) => {
+    const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
+    const end = endDate ? new Date(endDate) : new Date();
+    const ret = await Promise.all([...Array(8).keys()].slice(1,).map( async (day) => {
+        return await Postgres.getTerminalAverages(
+            Postgres.db,
+            start,
+            end,
+            day,
+            undefined,
+            uid
+        );
+    }))
+    const dayKey = ['monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'];
+    const reducedReturn = ret.reduce( (acc, curr, index, arr) => {
+        const keyed = dayKey[index];
+        return { ...acc, [keyed]: curr }
+    }, {});
 
-const dailyLogsFunction = async (startDate, endDate, tid, uid) => {
+    //console.log(`Transactions By Day Function:\n${JSON.stringify(reducedReturn, null, 4)}`)
+    return reducedReturn;
+};
+
+
+const dailyLogsFunction = async (startDate, endDate, dayOfWeek, tid, uid) => {
     const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
     const end = endDate ? new Date(endDate) : new Date();
     //console.log(`startDate: ${startDate}, endDate: ${endDate}, tid: ${tid}`);
@@ -149,10 +173,11 @@ const dailyLogsFunction = async (startDate, endDate, tid, uid) => {
         Postgres.db,
         start, 
         end,
+        dayOfWeek,
         tid,
         uid
     );
-    console.log('DAIL LOGS', logs)
+    //console.log('DAILY LOGS', logs)
     return destructureDailyLogs(logs);
 
 };
@@ -168,7 +193,7 @@ const vaultingLogFunction = async (startDate, endDate, tid, uid) => {
         tid,
         uid
     );
-    console.log('VAULTING DAYS:', days)
+    //console.log('VAULTING DAYS:', days)
     return destructureDailyLogs(days)
 }
 
@@ -187,19 +212,20 @@ const daysAtZero = async (startDate, endDate, tid, uid) => {
 };
 
 
-const terminalLogsRoot = async (startDate, endDate, tid, uid) => {
+const terminalLogsRoot = async (startDate, endDate, dayOfWeek, tid, uid) => {
     return {
-        daily: await dailyLogsFunction(startDate, endDate, tid, uid),
-        vaulting: await vaultingLogFunction(startDate, endDate, tid, uid)
+        daily: await dailyLogsFunction(startDate, endDate, dayOfWeek, tid, uid),
+        vaulting: await vaultingLogFunction(startDate, endDate, tid, uid),
     };
 };
 
 
-const terminalStatsRoot = async (startDate, endDate, tid, uid) => {
+const terminalStatsRoot = async (startDate, endDate, dayOfWeek, tid, uid) => {
     return {
         daysAtZero: await daysAtZero(startDate, endDate, tid, uid),
-        averages: await terminalAverages(startDate, endDate, tid, uid),
-        totals: await terminalTotals(startDate, endDate, tid, uid)
+        averages: await terminalAverages(startDate, endDate, dayOfWeek, tid, uid),
+        totals: await terminalTotals(startDate, endDate, tid, uid),
+        transactionsByDay: await transactionsByDayFunction(startDate, endDate, tid, uid)
     };
 };
 
@@ -236,6 +262,7 @@ export const resolvers = {
             // getting user info, argument sanitization
             var uid = args.user?.uid;
             uid = 'testUid_420';
+            const dayOfWeek = args.dayOfWeek ? args.dayOfWeek : undefined;
             const dailyLogsStartDate = args.dailyLogsStartDate ? new Date(args.dailyLogsStartDate) : subDays(new Date(), 7);
             const dailyLogsEndDate = args.dailyLogsEndDate ? new Date(args.dailyLogsEndDate) : new Date();
             const errorLogsStartDate = args.errorLogsStartDate ? new Date(args.errorLogsStartDate) : subDays(new Date(), 2);
@@ -245,9 +272,9 @@ export const resolvers = {
             const tid = args.tid;
             // the actual terminals resolver:
             return {
-                logs: terminalLogsRoot(dailyLogsStartDate, dailyLogsEndDate, tid, uid),
+                logs: terminalLogsRoot(dailyLogsStartDate, dailyLogsEndDate, dayOfWeek, tid, uid),
                 info: resolveUserTerminalInfo(uid),
-                stats: terminalStatsRoot(statsStartDate, statsEndDate, tid, uid),
+                stats: terminalStatsRoot(statsStartDate, statsEndDate, dayOfWeek, tid, uid),
                 errors: terminalErrorsRoot(errorLogsStartDate, errorLogsEndDate, tid, uid)
             };
         },
