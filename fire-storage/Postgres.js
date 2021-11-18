@@ -83,7 +83,7 @@ export const createUser = async (driver, uid, displayName, email, acct_type, sto
 export const getTerminalAverages = async (driver, startDate, endDate, dayOfWeek, tid, uid) => {
   console.log(`tid=${tid}, startDate=${startDate}, endDate=${endDate}`)
   var logs = await getTerminalDailyLogs(driver, startDate, endDate, dayOfWeek, tid, uid);
-  const addedData = await getTerminalDailyLogs(driver, subMonths(new Date(), 4), endDate, undefined, undefined, uid)
+  const addedData = await getTerminalDailyLogs(driver, subMonths(new Date(), 2), endDate, undefined, undefined, uid)
   //console.log(`all time data = ${JSON.stringify(addedData, null, 3)}`)
   const atms = await getUserTerminals(driver, uid)
   if (!logs || !atms) {

@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { useFirebaseAuth } from '../Authentication/FirebaseAuthProvider';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
+import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
 import ButtonGroup from '@mui/material/ButtonGroup';
 import ShareIcon from '@mui/icons-material/Share';
@@ -9,6 +10,9 @@ import Divider from '@mui/material/Divider';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
 import Chip from '@mui/material/Chip';
+import FormGroup from '@mui/material/FormGroup';
+import FormControlLabel from '@mui/material/FormControlLabel';
+import Switch from '@mui/material/Switch';
 import { useQuery, gql } from "@apollo/client";
 import { 
     getDayOfYear, 
@@ -63,7 +67,7 @@ const SelectorSliderFlex = styled(Box)`
 
 const NivoBar = styled.div`
     
-    height: 20rem;
+    height: 30rem;
 
     @media screen and (min-width: 1301px) {
         grid-column: 1/3;
@@ -75,10 +79,14 @@ const NivoBar = styled.div`
 `;
 
 const NivoBarTitle = styled.h4`
-    margin: 0;
-    padding: 0;
+    margin-bottom: 0;
+    padding-bottom: 0;
     font-size: 12pt;
     color: slategray;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-around;
 `;
 
 // for the query slider
@@ -202,6 +210,7 @@ const Calculator = (props) => {
     const [bandGranularity, setBandGranularity] = useState(0);
     const [cashLoadRange, setCashLoadRange] = useState([100,10000]);
     const [vaultMaxSum, setVaultMaxSum] = useState('20000');
+    const [vaultAdded, setVaultAdded] = useState(false);
 
     if (loading || error) {
         return <p>Loading...{JSON.stringify(error)}</p>;
@@ -255,11 +264,12 @@ const Calculator = (props) => {
             while (curB >= 0 && daTime < date) {
                 daTime = addDays(daTime, 1);
                 const dayName = format(daTime, 'EEEE').toLowerCase();
-                const balanceDifferential = (v[dayName].wdTxAmnt) * (-1.2);
+                const balanceDifferential = (v[dayName].wdTxAmnt) * (-1.2); // add in a buffer for success
                 console.log(`balance differential for ${k} = ${balanceDifferential}`)
                 curB = curB + balanceDifferential;
                 if (curB < 0) {
                     deathTown[k].push(0);
+                    curB =0;
                 } else {
                     deathTown[k].push(curB);
                 }
@@ -282,10 +292,57 @@ const Calculator = (props) => {
         })
     };
 
+    /**
+     * 
+     * @param {dict} rates the ATM withdrawal rates for each day of the week for each ATM 
+     * @param {dict} deathTown the dailyTerminalProjection return value, projecting ATM balances into future
+     * @param {Int} cashAvailable total cash available to vault with 
+     * @param {Date} fillupDate the date at which the user specifies to vault the machines
+     * @param {Int} granularity the minimum cash differential, typically defaults to $2,000
+     * @param {[Int]} loadRange the allowed range of cash the ATM can have
+     * @returns 
+     */
+    const vaultSqueeze = (rates, deathTown, cashAvailable, fillupDate, granularity, loadRange) => {
+        if (Object.keys(deathTown).length === 0) return undefined;
+        var lowEnd = 0;
+        var highEnd = cashAvailable;
+        var stepArr = [];
+        while(lowEnd <= highEnd){
+            arr.push(lowEnd);
+            lowEnd = lowEnd + granularity;
+        };
+
+        // amount of cash available for each ATM start is the total cash divided by the number of ATMs
+        const startingShare = cashAvailable / Object.keys(deathTown).length;
+        // given this new amount of cash that we allocate for each ATM, re-run the projection function
+        //  but with the added cash value, at the vaultDate specified in the params above
+        const newTown = dailyTerminalProjection(rates, [fillupDate, startingShare], addDays(fillupDate, 20))
+        // set up a simple array of information that we can sort and then iterate over
+        // the important pieces of information are each ATMs id, the current amount we are allocating to them
+        // (which initially is the startingShare value), when the current projection says that machine 
+        // run out, and how many times this machine has had vault 
+        const vaultingSet = Object.keys(newTown).map(([k,v]) => {
+            return {
+                id: k,
+                amnt: startingShare,
+                expiration: addDays(new Date(), newTown[v].indexOf(0)).setHours(0,0,0,0),
+                stepbacks: 0,
+            }
+        });
+
+        // keep swapping longest expiration until each ATM has been 
+        // put closer to expiration twice.  Adjusting this could potentially lead to
+        // different results, but I don't know how to do the proof stuff to figure it out..
+        // two passes for each machine seemed reasonable enough
+        while (!vaultingSet.map(v => v.stepbacks > 2).reduce((a, b) => a && b)) {
+            vaultingSet.reduce()
+        }
+    };
+
 
 
     //console.log(`withdrawal rates: ${JSON.stringify(atmWithdrawalRates, null, 2)}`)
-    const projection = dailyTerminalProjection(atmWithdrawalRates, undefined, addDays(vaultingDate, 30));
+    const projection = dailyTerminalProjection(atmWithdrawalRates, undefined, addDays(vaultingDate, 12));
     var maxYofProjection = Math.max.apply(null, Object.entries(projection).map( ([k,v]) => {
         return v[0]
     }));
@@ -328,12 +385,36 @@ const Calculator = (props) => {
 
 
             <NivoBar>
-                <NivoBarTitle>Terminal Cash Load Decay - Pattern History: {marks.filter( m => m.date.getTime() == (transactionalLookback).getTime() )[0].label}</NivoBarTitle>
+                <Stack direction="row" spacing={2}>
+                    <Box>
+                        <NivoBarTitle>
+                            Terminal Cash Load Decay - Pattern History: 
+                            {marks.filter( 
+                                m => m.date.getTime() == (transactionalLookback).getTime() 
+                                )[0].label
+                            }
+                        </NivoBarTitle>
+                    </Box>
+                    <Box>
+                        <FormGroup style={{'margin': '0.75rem 0 0 3rem'}}>
+                            <FormControlLabel 
+                                onChange={e => setVaultAdded(!vaultAdded)}
+                                control={<Switch />} 
+                                sx={{
+                                    color: vaultAdded ? '#000' : '#ccc'
+                                }} 
+                                label={
+                                    vaultAdded ? 'Vault Date Activated' : 'Run Vaulting Simulation'
+                                    } 
+                            />
+                        </FormGroup>
+                    </Box>
+                </Stack>
                 <ResponsiveLine
                         curve={'natural'}
                         useMesh={true}
                         data={nivoData}
-                        margin={{ top: 50, right: 110, bottom: 50, left: 70 }}
+                        margin={{ top: 20, right: 110, bottom: 50, left: 70 }}
                         xScale={{ type: 'point', min: 100}}
                         yScale={{ type: 'linear', min: 0, max: maxYofProjection ? maxYofProjection : 20000, stacked: false, reverse: false }}
                         yFormat=" >-.2f"
@@ -357,7 +438,7 @@ const Calculator = (props) => {
                             tickPadding: 5,
                             tickRotation: 0,
                             legend: 'Balance',
-                            legendOffset: -60,
+                            legendOffset: -65,
                             legendPosition: 'middle',
                             format: (value) =>
                                 `$${value.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",")}`

@@ -58,7 +58,7 @@ const DepletionLookbackSlider = (props) => {
 
         <StyledDaysOutSlider>
             <SliderHeading direction="row" spacing={1} >
-                <Box><h4>Transactional Lookback</h4></Box>
+                <Box><h4>Query New Transactional Lookback</h4></Box>
                 <Box><HelpIcon 
                     sx={{
                         marginTop: '0.05rem',
