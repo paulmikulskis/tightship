@@ -10,7 +10,8 @@
     "papi",
     "api-worker",
     "knex-admin",
-    "graphqlServer"
+    "graphqlServer",
+    "tightship-integrations"
   ],
   "resolutions": {
     "@mui/styled-engine": "npm:@mui/styled-engine-sc@latest"

@@ -69,7 +69,7 @@ const ConnectionStatus = styled.div`
 const PaiConnect = () => {
 
     const userInfoContext = useFirebaseUserInfo();
-    const userConnectionInfo = userInfoContext.userInfo;
+    const userConnectionInfo = userInfoContext.userConnectionInfo;
     
     const [paiUsername, setPaiUsername] = useState(userConnectionInfo?.pai_username ? userConnectionInfo.pai_username : '');
     const [paiPassword, setPaiPassword] = useState(userConnectionInfo?.pai_password ? userConnectionInfo.pai_username : '');
@@ -98,7 +98,7 @@ const PaiConnect = () => {
         setPaiPassword(userConnectionInfo?.pai_password ? userConnectionInfo.pai_username : '');
         setToggleStatus(userConnectionInfo?.pai_active ? userConnectionInfo.pai_active : false);
         return true;
-    }, [])
+    }, [userConnectionInfo])
 
     function buttonStatus() { 
         if (userInfoContext.pai_connected) {
@@ -149,15 +149,15 @@ const PaiConnect = () => {
 
         setDoc(
             connectionsRef, 
-            { pai_username: paiUsername, 
+            {   pai_username: paiUsername, 
                 pai_password: paiPassword, 
                 pai_active: toggleStatus,
                 user: user.email },
-                { merge: true }
+            { merge: true }
             ).then(() => {
                 getDoc(connectionsRef).then((savedDoc) => {
-                    userInfoContext.setUserInfo(savedDoc.data());
-                    console.log('set user context to', savedDoc.data());
+                    userInfoContext.setUserConnectionInfo(savedDoc.data());
+                    console.log('set context value "userConnectionInfo" to', savedDoc.data());
                 })
             }
             );

@@ -16,7 +16,7 @@ const SignOut = () => {
     const signOutUser = () => {
         console.log('attempting to sign out user')
         signOut(auth).then(() => {
-            userContext.setUserInfo({})
+            userContext.setUserConnectionInfo({})
             console.log('successfully signed out user')
           }).catch((error) => {
             console.log('error signing out user')

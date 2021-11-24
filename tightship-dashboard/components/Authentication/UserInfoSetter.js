@@ -14,7 +14,7 @@ const UserInfoSetter = ({ children }) => {
         getDoc(docRef).then(docSnap => {
             if (docSnap.exists()) {
                 console.log('userinfo setter setting user info context')
-                userInfoContext.setUserInfo(docSnap.data());
+                userInfoContext.setUserConnectionInfo(docSnap.data());
             } else {
                 console.log('no user settings doc found');
             }

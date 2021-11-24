@@ -15,7 +15,7 @@ import CardActions from '@mui/material/CardActions';
 import CardContent from '@mui/material/CardContent';
 import { useQuery, gql } from "@apollo/client";
 import Stack from '@mui/material/Stack';
-
+import FlagIcon from '@mui/icons-material/Flag';
 
 
 import theme from '../../pages/themes';
@@ -48,7 +48,9 @@ const SelectCrumbs = (props) => {
 
 
     const [selectedOptions, setSelectedOptions] = props.selectState;
+    const [highPri, setHighPri] = props.highPri;
     const data = props.terminalData;
+    const colorScale = props.colorscale;
 
     const handleDelete = (option) => {
         console.log(`value: ${option}`);
@@ -56,13 +58,29 @@ const SelectCrumbs = (props) => {
             return o != option;
             })
         )
-    }
+    };
 
-    var atmCrumbs = selectedOptions.map(option => {
+    const handleClick = (atmName) => {
+        highPri.indexOf(atmName) > -1 ? 
+            setHighPri(highPri.filter(o => o!=atmName)) :
+            setHighPri([...highPri, atmName])
+      };
+    var atmCrumbs = selectedOptions.map((option) => {
+        const isHighPri = highPri.indexOf(option) > -1;
         return (
             // eslint-disable-next-line react/jsx-key
             <Grid item>
                 <Chip 
+                    sx={{
+                        backgroundColor: colorScale[option] + '95',
+                        outline: isHighPri ? '1px solid #ff6347' : 'none'
+                    }}
+                    icon={
+                        isHighPri ? 
+                        <FlagIcon sx={{fill: '#f7022a'}}/> :
+                        <div></div>
+                    }
+                    onClick={() => handleClick(option)}
                     label={option}
                     onDelete={(event) => handleDelete(option)} 
                 />
@@ -80,11 +98,19 @@ const SelectCrumbs = (props) => {
 
     const buttonAddAll = () => {
         setSelectedOptions(data.map(i => i.locationName));
-    }
+    };
 
     const buttonClearAll = () => {
         setSelectedOptions([]);
-    }
+    };
+
+    const buttonClearAllPriorities = () => {
+        setHighPri([])
+    };
+
+    const buttonFilterHighPri = () => {
+        setSelectedOptions(selectedOptions.filter(o => highPri.indexOf(o) >= 0))
+    };
 
     const buttons = [
         <Button sx={{
@@ -109,6 +135,16 @@ const SelectCrumbs = (props) => {
             }}} 
             key="two"
             onClick={() => buttonClearAll()}>Clear All Terminals</Button>,
+        <Button sx={{
+            width: '100%',
+            borderColor: theme.palette.grey.dark,
+            color: theme.palette.grey.dark,
+            borderBottom: 'none',
+            '&:hover': {
+                borderBottom: 'none',
+            }}} 
+            key="two"
+            onClick={() => buttonClearAllPriorities()}>Clear Priority</Button>,
         <Button sx={{
             width: '100%', 
             borderColor: theme.palette.grey.dark,

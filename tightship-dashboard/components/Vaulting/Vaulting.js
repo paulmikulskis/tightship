@@ -8,12 +8,16 @@ import ShareIcon from '@mui/icons-material/Share';
 import Divider from '@mui/material/Divider';
 import Autocomplete from '@mui/material/Autocomplete';
 import TextField from '@mui/material/TextField';
-import Chip from '@mui/material/Chip';
+import Stack from '@mui/material/Stack';
 import { useQuery, gql } from "@apollo/client";
 
 import Calculator from './Calculator';
+import DefaultStepper from './DefaultStepper';
 
 
+const StyledDefaultStepper = styled(Box)`
+    width: 100%;
+`;
 
 const VaultingContainer = styled(Box)`
     padding: 2rem;
@@ -26,14 +30,27 @@ const VaultingContainer = styled(Box)`
 
 `;
 
+const VaultingHeader = styled(Stack)`
+    padding: 0rem 1rem 2rem 0;
+`;
+
 const Vaulting = () => {
+
+    const [stepperStep, setStepperStep] = useState(0);
+
 
     return (
         <VaultingContainer>
-            <h1>Vaulting Tool</h1>
-            <p style={{'marginTop': '0', color: 'grey'}}>Iterate through vaulting plans instantly</p>
+            <VaultingHeader direction="row" spacing={6} sx={{width: '100%'}}>
+                <Box sx={{width: '100%'}}>   
+                    <h1 style={{'padding-bottom': '1rem'}}>Vaulting Tool</h1>
+                    <StyledDefaultStepper>
+                        <DefaultStepper stepperStep={[stepperStep, setStepperStep]} />
+                    </StyledDefaultStepper>
+                </Box>
+            </VaultingHeader>
             <Divider variant="middle" />
-            <Calculator />
+            <Calculator stepperStep={[stepperStep, setStepperStep]}/>
         </VaultingContainer>
     )
 }

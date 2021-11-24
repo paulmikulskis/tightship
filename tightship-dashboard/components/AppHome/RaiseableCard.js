@@ -5,19 +5,19 @@ import Card from '@mui/material/Card';
 const RaiseableCard = (props) => {
 
     const [raised, setRaised] = useState(false);
-
+    const sxOverrides = props.sx ? props.sx : {}
     return (
         <Card
-            style={{
+            sx={{
                 width: '100%',
                 height: '100%',
-                margin: '1rem',
+                margin: props.margin ? props.margin : '1rem',
                 padding: '0rem 1rem',
                 display: 'flex',
-                'border-radius': '15px',
-                'flex-direction': 'column',
-                'align-items': 'center',
-                'justify-content': 'center',
+                borderRadius: '15px',
+                flexDirection: 'column',
+                justifyContent: 'center',
+                ...sxOverrides
             }}
             onMouseOver={()=>setRaised(true)} 
             onMouseOut={()=>setRaised(false)} 

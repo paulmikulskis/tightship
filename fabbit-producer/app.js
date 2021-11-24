@@ -45,6 +45,12 @@ app.use('/', Arena(
         hostId: 'fabbit-producer',
         redis: config.get('redis.host'),
         type: 'bull'
+      },
+      {
+        name: config.get('bull.queues.sms'),
+        hostId: 'fabbit-producer',
+        redis: config.get('redis.host'),
+        type: 'bull'
       }
     ]
   },

@@ -63,7 +63,17 @@ const app = () => {
 
     const user = useFirebaseAuth();
     const router = useRouter();
+
+    // global context setters and variables
     const userInfoContext = useFirebaseUserInfo();
+
+    const userConnectionInfo = userInfoContext.userConnectionInfo;
+    const setUserConnectionInfo = userInfoContext.setUserConnectionInfo;
+    const userVaulters = userInfoContext.userVaulters;
+    const setUserVaulters = userInfoContext.setUserVaulters;
+
+    const [info, setInfo] = useState(undefined);
+
     const db = getFirestore();
     const [loading, setLoading] = useState(true);
     const [userSettings, setUserSettings] = useState('');
@@ -73,23 +83,43 @@ const app = () => {
     const headBackgroundColor = 'primary.dark'
 
 
-    useEffect(() => {
+    useEffect(async () => {
+        if (info) {
+            setLoading(false);
+            return true;
+        };
         if (user) {
-            const docRef = doc(db, "connections", user.uid);
-            getDoc(docRef).then(docSnap => {
-                if (docSnap.exists()) {
-                    console.log('userinfo setter setting user info context, about to render app..', docSnap.data())
-                    userInfoContext.setUserInfo(docSnap.data())
-                    //setUserSettings(docSnap.data())
-                    setLoading(false)
-                } else {
-                    console.log('no user settings doc found');
-                    setLoading(false)
-                }
-            })
-        }
+            // if there is no user connections info in the app state, go fetch it
+            if (!info) {
+                const connectionsRef = doc(db, "connections", user.uid);
+                await getDoc(connectionsRef).then(docSnap => {
+                    if (docSnap.exists()) {
+                        console.log('setting userConnectionInfo', docSnap.data())
+                        setUserConnectionInfo(docSnap.data())
+                        setInfo(docSnap.data());
+                    } else {
+                        console.log('no user settings doc found');
+                        setInfo({});
+                    };
+                });
+            };
+            // if there is no user vaulter info in the app state, go fetch it
+            if (!userVaulters) {
+                const vaultersRef = doc(db, "vaulters", user.uid);
+                await getDoc(vaultersRef).then(docSnap => {
+                    if (docSnap.exists()) {
+                        console.log('user vaulters setter setting vaulters context, about to render app..', docSnap.data())
+                        setUserVaulters(docSnap.data());
+                    } else {
+                        console.log('no user vaulters doc found');
+                        setUserVaulters({});
+                    };
+                });
+            };
+        };
+        return true;
 
-    }, [user, loading])
+    }, [user, info, loading])
 
 
     if (loading) {

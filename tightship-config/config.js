@@ -54,7 +54,33 @@ export const config = convict({
         default: 'live',
         env: 'BULL_LIVE_QUEUE_NAME'
       },
+      sms: {
+        doc: 'Bull js SMS queue for mobile interaction',
+        format: String,
+        default: 'sms',
+        env: 'BULL_SMS_QUEUE_NAME'
+      }
     }
+ },
+ twilio: {
+   apiKey: {
+     doc: 'API key for twilio',
+     format: String,
+     default: undefined,
+     env: 'TWILIO_API_KEY'
+   },
+   sid: {
+     doc: 'twillio sender id',
+     format: String,
+     default: undefined,
+     env: 'TWILIO_SID'
+   },
+   serviceId: {
+     doc: 'twilio service id for TightShip project',
+     format: String,
+     default: undefined,
+     env: 'TWILIO_APP_ID'
+   }
  },
  redis: {
     host: {

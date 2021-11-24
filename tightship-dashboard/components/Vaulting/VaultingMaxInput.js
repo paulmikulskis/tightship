@@ -16,6 +16,7 @@ export function numberWithCommas(x) {
 const VaultingMaxInput = (props) => {
 
     var [vaultMaxSum, setVaultMaxSum] = props.setMax;
+    const [stepperStep, setStepperStep] = props.stepperStep;
     const handleChange = (event) => {
         setVaultMaxSum(event.target.value);
     }
@@ -29,6 +30,7 @@ const VaultingMaxInput = (props) => {
                     value={(vaultMaxSum)}
                     label="Cash Available"
                     onChange={handleChange}
+                    onClick={() => setStepperStep(stepperStep > 3 ? stepperStep : 3)}
                     startAdornment={<InputAdornment position="start">$</InputAdornment>}
                 />
             </FormControl>

@@ -247,9 +247,7 @@ export const resolvers = {
     },
     // root Mutation
     Mutation: {
-        hello: () => {
-            return 
-        }
+        app: appResolver,
     },
 
     // app functionality
@@ -279,6 +277,27 @@ export const resolvers = {
             };
         },
     },
+    AppMutate: {
+        accountID: async (parent, args, ctx, info) => {
+            return ctx.user?.uid + '';
+        },
+
+        sendEmails: async (parent, args, ctx, info) => {
+            var uid = args.user?.uid;
+            uid = 'testUid_420';
+            console.log(`will be sending emails to ${args.addresses} [NOT YET IMPLEMENTED!]`);
+            return true;
+        },
+
+        sendSMSVaultPlan: async (parent, args, ctx, info) => {
+            var uid = args.uid;
+            uid = 'testUid_420';
+            console.log('abount to enqueue SMS request')
+            await Bully.enqueueSMSVaultPlan(args)
+            console.log(`graphql queuing into Bull to send SMS's to ${args.numbers}`);
+            return true;
+        },
+    }
 
 };
 

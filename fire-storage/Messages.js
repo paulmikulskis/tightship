@@ -1,6 +1,9 @@
 
 import { config } from 'tightship-config';
 import Bull from 'bull';
+import { differenceInMilliseconds, format } from 'date-fns';
+import twilio from 'twilio';
+
 
 const CRON_MIDNIGHT = '0 0 * * *';
 const CRON_ONE = '0 1 * * *';
@@ -8,12 +11,12 @@ const CRON_TWO = '0 2 * * *';
 const CRON_THREE = '0 3 * * *';
 const CRON_MINUTE = '0 * * * *';
 
-const processors = {
+export const processors = {
     pai: 'PAI',
     cds: 'CDS',
 }
 
-const dailyQueue = new Bull(
+export const dailyQueue = new Bull(
     config.get('bull.queues.daily'), 
     { redis: 
         { port: config.get('redis.port'), 
@@ -21,8 +24,16 @@ const dailyQueue = new Bull(
     }
 );
 
-const liveFeedQueue = new Bull(
+export const liveFeedQueue = new Bull(
     config.get('bull.queues.live'), 
+    { redis: 
+        { port: config.get('redis.port'), 
+        host: config.get('redis.host')} 
+    }
+);
+
+export const SMSQueue = new Bull(
+    config.get('bull.queues.sms'), 
     { redis: 
         { port: config.get('redis.port'), 
         host: config.get('redis.host')} 
@@ -35,6 +46,7 @@ const liveFeedQueue = new Bull(
 export const allQueues = [
     dailyQueue,
     liveFeedQueue,
+    SMSQueue
 ];
 
 
@@ -194,9 +206,40 @@ const processConnectionsDocument = async (change) => {
     queued_jobs = queued_jobs.filter(job => job.id === uid);
 
     await processPAIQueues(document, uid, user_email, queued_jobs);
+    return true;
+};
 
+const sendSMSVaultPlan = async (job) => {
+    var numberStrings = job.data.numbers;
+    const vaulterNames = job.data.vaulterNames;
+    const terminalNames = job.data.terminals;
+    const terminalAmounts = job.data.amounts;
+    const date = new Date(job.data.date);
+    const originalMessage = job.data.message || '';
+    const messages = formatVaultPlanMessages(terminalNames, terminalAmounts, vaulterNames, date, originalMessage);
+    return true;
+};
+
+const enqueueSMSVaultPlan = async ({ uid, vaulterNames, numbers, terminals, amounts, date, message, sendTime }) => {
+    const jobTime = sendTime ? new Date(sendTime) : new Date('1/1/1969')
+    const options = {
+        attempts: 2,
+        delay: jobTime.getTime() < new Date().getTime() ? 0 : differenceInMilliseconds(jobTime, new Date())
+    };
+    const data = {
+        uid: uid,
+        vaulterNames: vaulterNames || ['fellow scallywag'],
+        numbers: numbers,
+        terminals: terminals,
+        amounts: amounts,
+        date: date || new Date(),
+        message: message || ''
+    };
+    SMSQueue.add('vaultPlan', data, options);
 };
 
 export { 
-    processConnectionsDocument 
+    processConnectionsDocument,
+    sendSMSVaultPlan,
+    enqueueSMSVaultPlan,
 };

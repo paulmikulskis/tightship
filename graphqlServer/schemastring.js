@@ -10,7 +10,7 @@ type Query {
 }
 
 type Mutation {
-  hello: String
+  app(uid: String!): AppMutate
 }
 
 type Terminals {
@@ -138,6 +138,14 @@ type App {
     tid: String, 
     uid: String!
   ): Terminals
+}
+
+# mutations below --------------
+
+type AppMutate {
+  accountID: String!
+  sendEmails(uid: String!, addresses: [String]!, subject: String!, body: String!): Boolean!
+  sendSMSVaultPlan(uid: String!, vaulterNames: [String], numbers: [String]!, terminals: [String]!, amounts: [Int]!, date: Date, message: String, sendTime: String): Boolean!
 }
 
 

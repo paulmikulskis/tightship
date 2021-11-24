@@ -14,8 +14,6 @@ import Dialog from '@mui/material/Dialog';
 const StyledDaysOutSlider = styled(Box)`
     padding: 0;
     width: 100%;
-    grid-column: 1/3;
-
 `;
 
 const SliderLabel = styled.p`
