@@ -1,10 +1,10 @@
-import { useRef, useState } from 'react';
+import { useRef, useState, useEffect } from 'react';
 import { useFirebaseAuth } from '../Authentication/FirebaseAuthProvider';
 import styled from 'styled-components';
 import Box from '@mui/material/Box';
 import Stack from '@mui/material/Stack';
 import Button from '@mui/material/Button';
-import { useQuery, gql } from "@apollo/client";
+import { useLazyQuery, gql } from "@apollo/client";
 import { 
     getDayOfYear, 
     subWeeks, 
@@ -223,14 +223,30 @@ const TERMINAL_BALANCES_QUERY = gql`
     }
 `;
 
+// Desired hook
+function useCompare (val) {
+    const prevVal = usePrevious(val)
+    return prevVal !== val
+}
+
+// Helper hook
+function usePrevious(value) {
+    const ref = useRef();
+    useEffect(() => {
+        ref.current = value;
+    });
+    return ref.current;
+}
+
 const Calculator = (props) => {
 
     const user = useFirebaseAuth();
     const uid = user.uid;
-    const [transactionalLookback, setTransactionalLookback] = useState(subWeeks(new Date().setHours(0,0,0,0), 1))
+    const [transactionalLookback, setTransactionalLookback] = useState(subWeeks(new Date().setHours(0,0,0,0), 3))
     const debouncedTransactionalLookback = UseDebounce(transactionalLookback, 2000);
+    const lookbackChanged = useCompare(debouncedTransactionalLookback)
     const nivoLineRef = useRef();
-    const { loading, error, data } = useQuery(TERMINAL_BALANCES_QUERY,{
+    const [getTerminalData, { loading, error, data }] = useLazyQuery(TERMINAL_BALANCES_QUERY,{
         variables: { uid, statsStartDate: debouncedTransactionalLookback }
     });
     const [selectedOptions, setSelectedOptions] = useState([]);
@@ -241,12 +257,32 @@ const Calculator = (props) => {
     const [vaultAdded, setVaultAdded] = useState(false);
     const [fillup, setFillup] = useState({});
     const [simulationButtonPressed, setSimulationButtonPressed] = useState(false);
+    const [firstRender, setFirstRender] = useState(true);
     const [highPri, setHighPri] = useState([]);
     const [vaultPlan, setVaultPlan] = useState([]);
     const [stepperStep, setStepperStep] = props.stepperStep;
     const [openSaveVaultPlan, setOpenSaveVaultPlan] = useState(false);
 
+    if (firstRender) {
+        console.log('PULLING DATA!!!!!!')
+        getTerminalData();
+        setFirstRender(false);
+    };
+
+    useEffect(() => {
+        if(lookbackChanged) {
+            console.log('PULLING DATA!!!!!!')
+            getTerminalData();
+        };
+    }, [debouncedTransactionalLookback]);
+
+    if (debouncedTransactionalLookback != transactionalLookback)
+
     if (loading || error) {
+        return <p>Loading...{JSON.stringify(error)}</p>;
+    };
+
+    if (data === undefined) {
         return <p>Loading...{JSON.stringify(error)}</p>;
     };
 

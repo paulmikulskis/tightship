@@ -76,7 +76,7 @@ const VaultPlanDataGrid = (props) => {
       setFillup({});
       setHighPri([]);
       setVaultPlan([]);
-      setSimulationButtonPressed(false);
+      //setSimulationButtonPressed(false);
     }
 
 

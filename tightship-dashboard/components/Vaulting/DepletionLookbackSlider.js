@@ -82,7 +82,7 @@ const DepletionLookbackSlider = (props) => {
                 valueLabelFormat={v => <SliderLabel>{marks.filter(i => i.value == v)[0].label}</SliderLabel>}
                 valueLabelDisplay="auto"
                 marks={marks}
-                onChange={handleSliderChange}
+                onChangeCommitted={handleSliderChange}
                 step={null}
                 min={1}
                 max={7}

@@ -126,7 +126,7 @@ const CashLoadRange = (props) => {
                 min={0}
                 max={12000}
                 value={value}
-                onChange={handleSliderChange}
+                onChangeCommitted={handleSliderChange}
                 disableSwap
             />
         </StyledCashLoadRangeSlider>
