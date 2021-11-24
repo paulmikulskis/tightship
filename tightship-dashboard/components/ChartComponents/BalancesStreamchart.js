@@ -5,6 +5,8 @@ import { ResponsivePie } from '@nivo/pie';
 import { ResponsiveStream } from '@nivo/stream';
 import { subQuarters, format, subDays } from 'date-fns';
 
+import { numberWithCommas } from './TerminalBalances';
+
 
 const TERMINAL_BALANCES_QUERY = gql`
     query TerminalBalancesQuery($uid: String!, $dailyLogsStartDate: Date) {
@@ -71,6 +73,7 @@ const BalancesStreamchart = (props) => {
             <p>Balance Patterns</p>
             <div style={{ height: '80%'}}>
                 <ResponsiveStream 
+                    valueFormat={(v) => v ? `$${numberWithCommas(v)}` : 'n/a'}
                     margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
                     keys={Object.values(tids)}
                     data={dateArray}

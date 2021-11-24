@@ -22,6 +22,7 @@ import Popover from '@mui/material/Popover';
 import Typography from '@mui/material/Typography';
 
 import QuickSMS from './QuickSMS';
+import SavePlan from './SavePlan';
 
 import Popper from '@mui/material/Popper';
 
@@ -48,27 +49,34 @@ const VaultPlanDataGrid = (props) => {
     const [highPri, setHighPri] = props.highPri;
     const [simulationButtonPressed, setSimulationButtonPressed] = props.simulationButtonPressed;
     const [openSaveVaultPlan, setOpenSaveVaultPlan] = props.saveVaultPlan;
+    const [finished, setFinished] = useState(false);
 
     // sms popover state variables
-    const [anchorElement, setAnchorElement] = useState(null);
-    const openQuickSMS = Boolean(anchorElement);
+    const [smsAnchorElement, setSmsAnchorElement] = useState(null);
+    const [savePlanAnchorElement, setSavePlanAnchorElement] = useState(null);
 
+    const openQuickSMS = Boolean(smsAnchorElement);
+    const openSavePlan = Boolean(savePlanAnchorElement);
 
     console.log(`colorKey in component=${JSON.stringify(props.colorKey, null, 3)}`)
 
 
-    const buttonSavePlan = async (plan) => {
+    const buttonSavePlan = async (event) => {
       setStepperStep(stepperStep > 5 ? stepperStep : 5);
-      setOpenSaveVaultPlan(true);
+      setSavePlanAnchorElement(event.currentTarget);
+    };
+
+    const closeSavePlan = (plan) => {
+      setSavePlanAnchorElement(null);
     };
 
     const buttonQuickSMS = async (event) => {
       setStepperStep(stepperStep > 5 ? stepperStep : 5);
-      setAnchorElement(event.currentTarget);
+      setSmsAnchorElement(event.currentTarget);
     };
 
     const closeQuickSMS = () => {
-      setAnchorElement(null);
+      setSmsAnchorElement(null);
     };
 
     const buttonClearPlan = () => {
@@ -77,7 +85,7 @@ const VaultPlanDataGrid = (props) => {
       setHighPri([]);
       setVaultPlan([]);
       //setSimulationButtonPressed(false);
-    }
+    };
 
 
     const buttons = [
@@ -94,7 +102,7 @@ const VaultPlanDataGrid = (props) => {
               borderLeft: 'none',
           }}} 
           key="one"
-          onClick={() => buttonSavePlan(vaultPlan)}>
+          onClick={(e) => buttonSavePlan(e)}>
             Save Plan
       </Button>,
       <Button 
@@ -168,7 +176,7 @@ const VaultPlanDataGrid = (props) => {
         <Popover
           id={'quickSMS'}
           open={openQuickSMS}
-          anchorEl={anchorElement}
+          anchorEl={smsAnchorElement}
           onClose={closeQuickSMS}
           anchorOrigin={{
             vertical: 'top',
@@ -179,6 +187,22 @@ const VaultPlanDataGrid = (props) => {
           }}
         >
           <QuickSMS fillup={fillup} vaultPlan={vaultPlan}/>
+        </Popover>
+        <Popover
+          id={'savePlan'}
+          open={openSavePlan}
+          anchorEl={savePlanAnchorElement}
+          onClose={closeSavePlan}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'bottom',
+            horizontal: 'right',
+          }}
+        >
+          <SavePlan closePopup={closeSavePlan} fillup={fillup} vaultPlan={vaultPlan}/>
         </Popover>
     </CardFooter>
     </Card>

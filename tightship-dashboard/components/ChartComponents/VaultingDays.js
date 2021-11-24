@@ -5,8 +5,12 @@ import { ResponsiveBar } from '@nivo/bar';
 import { ResponsiveTimeRange } from '@nivo/calendar';
 import { subQuarters, format } from 'date-fns';
 import styled from 'styled-components';
+import Card from '@mui/material/Card';
+import { Typography } from '@mui/material';
+import Stack from '@mui/material/Stack';
+import Box from '@mui/material/Box';
 
-
+import { numberWithCommas } from './TerminalBalances';
 
 export const VAULTING_DAYS_QUERY = gql`
     query VaultingDaysQuery($uid: String!, $dailyLogsStartDate: Date) {
@@ -51,6 +55,16 @@ const VaultingChartContainer = styled.div`
     grid-column: 2/3;
 `;
 
+const ToolTipCard = styled(Card)`
+    padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+    margin: 0;
+`;
+
+const DateStack = styled(Box)`
+    display: flex;
+    flex-direction: column;
+`;
+
 const VaultingDays = (props) => {
 
     const user = useFirebaseAuth();
@@ -81,6 +95,24 @@ const VaultingDays = (props) => {
             </VaultingInfoContainer>
             <VaultingChartContainer>
                 <ResponsiveTimeRange
+                    tooltip={data => {
+                        return <ToolTipCard sx={{display: 'inline-block'}}>
+                            <Stack direction='row' spacing={1}>
+                                <DateStack>
+                                    <Typography sx={{display: 'inline-block'}} variant="subtitle">
+                                        {format(data.date, 'EEE')}
+                                    </Typography>
+                                    <Typography sx={{display: 'inline-block'}} variant="subtitle2">
+                                        {format(data.date, 'MMM d')}
+                                    </Typography>
+                                </DateStack>
+                                <Typography variant='h6'>
+                                    {`$${numberWithCommas(data.value)}`}
+                                </Typography>
+                            </Stack>
+
+                        </ToolTipCard>
+                    }}
                     monthLegend={(y,m,d) => new Date(`${m}/${d}/${y}`).getUTCMonth}
                     data={vaultingData}
                     from={chartStart}

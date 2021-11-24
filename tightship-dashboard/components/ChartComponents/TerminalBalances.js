@@ -4,7 +4,9 @@ import { useQuery, gql } from "@apollo/client";
 import { ResponsiveBar } from '@nivo/bar';
 
 
-
+export const numberWithCommas = (x) => {
+    return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
 const TERMINAL_BALANCES_QUERY = gql`
     query TerminalBalancesQuery($uid: String!) {
@@ -47,7 +49,16 @@ const TerminalBalances = (props) => {
         <div style={{ height: '100%', display: 'flex', 'flex-direction': 'column'}}>
             <p>Live Terminal Balances</p>
             <div style={{ height: '80%'}}>
-                <ResponsiveBar 
+                <ResponsiveBar
+                    axisLeft={{
+                        format: function(value) { 
+                            return value % 2000 == 0 ? `$${numberWithCommas(value)}` : '';
+                        }
+                    }}
+                    axisBottom={{
+                        tickRotation: 38
+                    }}
+                    valueFormat={(v) => `$${numberWithCommas(v)}`}
                     data={balanceData}
                     indexBy={'location'}
                     keys={['balance']}

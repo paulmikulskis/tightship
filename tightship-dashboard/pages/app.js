@@ -11,6 +11,7 @@ import Account from '../components/Account/Account';
 import Dashboard from '../components/Dashboard/Dashboard';
 import MappingHome from '../components/Mapping/MappingHome';
 import Vaulting from '../components/Vaulting/Vaulting';
+import Plans from '../components/Plans/Plans';
 
 import { BrowserRouter as Router, Switch, Route, Link } from 'react-router-dom';
 import TextField from '@mui/material/TextField';
@@ -153,6 +154,9 @@ const app = () => {
                         </Route>
                         <Route path="/app/vaulting">
                             <GridAppHome sx={{backgroundColor: appBackgroundColor}}><Vaulting /></GridAppHome>
+                        </Route>
+                        <Route path="/app/plans">
+                            <GridAppHome sx={{backgroundColor: appBackgroundColor}}><Plans /></GridAppHome>
                         </Route>
                         <Route path="/app">
                             <GridAppHome sx={{backgroundColor: appBackgroundColor}}><AppHome /></GridAppHome>

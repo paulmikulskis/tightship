@@ -41,7 +41,7 @@ const Dashboard = () => {
     return (
         <DashboardWrapper>
             <DashboardGrid>
-                <div style={{'grid-column': '1/3'}}>
+                <div style={{'grid-column': '1/3', 'grid-row': '1/3'}}>
                     <DashboardChartCard>
                         <TerminalBalances />
                     </DashboardChartCard>

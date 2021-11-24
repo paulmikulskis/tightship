@@ -2,7 +2,7 @@ import { useState, useRef } from 'react';
 import { useFirebaseAuth } from "../Authentication/FirebaseAuthProvider";
 import { useQuery, gql } from "@apollo/client";
 import { ResponsivePie } from '@nivo/pie'
-
+import { numberWithCommas } from './TerminalBalances'
 
 
 
@@ -48,6 +48,7 @@ const CashDeployed = (props) => {
             <p>Live Terminal Balances</p>
             <div style={{ height: '100%'}}>
                 <ResponsivePie 
+                    valueFormat={(v) => `$${numberWithCommas(v)}`}
                     margin={{ top: 40, right: 80, bottom: 80, left: 80 }}
                     innerRadius={0.7}
                     padAngle={4}
