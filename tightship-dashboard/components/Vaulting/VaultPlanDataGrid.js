@@ -18,8 +18,12 @@ import theme from '../../pages/themes';
 import PhoneIphoneIcon from '@mui/icons-material/PhoneIphone';
 import DeleteOutlineIcon from '@mui/icons-material/DeleteOutline';
 import SaveAltIcon from '@mui/icons-material/SaveAlt';
+import Popover from '@mui/material/Popover';
+import Typography from '@mui/material/Typography';
 
+import QuickSMS from './QuickSMS';
 
+import Popper from '@mui/material/Popper';
 
 export function numberWithCommas(x) {
     return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -44,6 +48,12 @@ const VaultPlanDataGrid = (props) => {
     const [highPri, setHighPri] = props.highPri;
     const [simulationButtonPressed, setSimulationButtonPressed] = props.simulationButtonPressed;
     const [openSaveVaultPlan, setOpenSaveVaultPlan] = props.saveVaultPlan;
+
+    // sms popover state variables
+    const [anchorElement, setAnchorElement] = useState(null);
+    const openQuickSMS = Boolean(anchorElement);
+
+
     console.log(`colorKey in component=${JSON.stringify(props.colorKey, null, 3)}`)
 
 
@@ -52,9 +62,13 @@ const VaultPlanDataGrid = (props) => {
       setOpenSaveVaultPlan(true);
     };
 
-    const buttonQuickSMS = async (plan) => {
+    const buttonQuickSMS = async (event) => {
       setStepperStep(stepperStep > 5 ? stepperStep : 5);
-      alert('will send quick sms!')
+      setAnchorElement(event.currentTarget);
+    };
+
+    const closeQuickSMS = () => {
+      setAnchorElement(null);
     };
 
     const buttonClearPlan = () => {
@@ -80,7 +94,9 @@ const VaultPlanDataGrid = (props) => {
               borderLeft: 'none',
           }}} 
           key="one"
-          onClick={() => buttonSavePlan(vaultPlan)}>Save Plan</Button>,
+          onClick={() => buttonSavePlan(vaultPlan)}>
+            Save Plan
+      </Button>,
       <Button 
         endIcon={<PhoneIphoneIcon style={{ fontSize: 17 }} />}
         sx={{
@@ -92,7 +108,7 @@ const VaultPlanDataGrid = (props) => {
               borderBottom: 'none',
           }}} 
           key="two"
-          onClick={() => buttonQuickSMS()}>Quick SMS</Button>,
+          onClick={(e) => buttonQuickSMS(e)}>Quick SMS</Button>,
       <Button 
         endIcon={<DeleteOutlineIcon style={{ fontSize: 19 }} />}
         sx={{
@@ -149,6 +165,21 @@ const VaultPlanDataGrid = (props) => {
         >
             {buttons}
         </ButtonGroup>
+        <Popover
+          id={'quickSMS'}
+          open={openQuickSMS}
+          anchorEl={anchorElement}
+          onClose={closeQuickSMS}
+          anchorOrigin={{
+            vertical: 'top',
+            horizontal: 'left',
+          }}
+          transformOrigin={{
+            vertical: 'bottom',
+          }}
+        >
+          <QuickSMS fillup={fillup} vaultPlan={vaultPlan}/>
+        </Popover>
     </CardFooter>
     </Card>
     )

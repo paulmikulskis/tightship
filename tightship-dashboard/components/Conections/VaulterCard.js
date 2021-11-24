@@ -79,7 +79,7 @@ const InsetDivider = styled(Divider)`
     margin-left: 30px;
 `;
 
-const formatPhoneNumber = (phoneNumberString) => {
+export const formatPhoneNumber = (phoneNumberString) => {
     const input = phoneNumberString.replace(/\D/g,'').substring(0,10); // First ten digits of input only
     const areaCode = input.substring(0,3);
     const middle = input.substring(3,6);
