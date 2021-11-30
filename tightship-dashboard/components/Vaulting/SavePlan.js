@@ -26,14 +26,14 @@ const SavePlan = (props) => {
     const db = getFirestore();
     const user = useFirebaseAuth();
 
-    const savePlan = async (plan, fillup) => {
+    const savePlan = async (plan, date) => {
         // return true;
         if (plan === undefined || plan === null) {
             alert('no vault plan to save!');
             return false;
         };
         const firestoreVaultPlanObj = {
-            date: fillup.date,
+            date: date,
             terminals: plan.map(row => row.id),
             amounts: plan.map(row => row.amnt),
             expirations: plan.map(row => row.expiration)
@@ -59,7 +59,7 @@ const SavePlan = (props) => {
                     <TextField
                         onKeyPress={(event) => {
                             if (event.key === 'Enter') {
-                                savePlan(props.vaultPlan, props.fillup);
+                                savePlan(props.vaultPlan, props.date);
                             };
                         }}
                         onChange={(event) => setPlanName(event.currentTarget.value)}
@@ -74,7 +74,7 @@ const SavePlan = (props) => {
                         size="small"
                     />
                     <IconButton
-                        onClick={(e) => savePlan(props.vaultPlan, props.fillup)}
+                        onClick={(e) => savePlan(props.vaultPlan, props.date)}
                     >
                         <SaveIcon />
                     </IconButton>

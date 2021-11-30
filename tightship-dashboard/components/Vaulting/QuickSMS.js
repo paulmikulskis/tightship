@@ -130,8 +130,7 @@ const QuickSMS = (props) => {
     const [selectedVaulters, setSelectedVaulters] = useState([]);
     const theme = useTheme();
     const vaultPlan = props.vaultPlan;
-    const fillup = props.fillup;
-    const vaultDate = fillup.date;
+    const vaultDate = props.date;
 
     const [sendSMSFunction, { data, loading, error }] = useMutation(VAULT_PLAN_SMS, {
         variables: {
@@ -166,7 +165,7 @@ const QuickSMS = (props) => {
               multiple
               onClose={(event, reason) => {
                 if (reason === 'escape') {
-                  handleClose();
+                  props.close();
                 }
               }}
               value={selectedVaulters}

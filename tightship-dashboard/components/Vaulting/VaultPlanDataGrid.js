@@ -202,7 +202,7 @@ const VaultPlanDataGrid = (props) => {
             horizontal: 'right',
           }}
         >
-          <SavePlan closePopup={closeSavePlan} fillup={fillup} vaultPlan={vaultPlan}/>
+          <SavePlan closePopup={closeSavePlan} date={fillup.date} vaultPlan={vaultPlan}/>
         </Popover>
     </CardFooter>
     </Card>

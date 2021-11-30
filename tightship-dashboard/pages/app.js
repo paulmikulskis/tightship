@@ -19,6 +19,8 @@ import { doc, getDoc, getFirestore } from 'firebase/firestore';
 import Box from '@mui/material/Box';
 import Paper from '@mui/material/Paper';
 import { useFirebaseUserInfo } from '../components/Authentication/FirebaseUserInfoProvider';
+import Drift from 'react-driftjs';
+import Head from 'next/head'
 
 
 const StyledHome = styled(Box)`
@@ -134,6 +136,8 @@ const app = () => {
         )
     } else {
         return (
+                <div>
+                
                 <Router>
                 <StyledHome>
                     <GridHeader sx={{backgroundColor: headBackgroundColor}}><Header /></GridHeader>
@@ -166,6 +170,12 @@ const app = () => {
                     <GridRightSide sx={{backgroundColor: sidebarsBackgroundColor}}/>
                 </StyledHome>
                 </Router>
+                <Drift
+                    appId="ynaaytakmg8w"
+                    userId={user.uid}
+                    attributes={{ email: user.email, name: user.displayName }}
+                />
+                </div>
         )
     }
 }

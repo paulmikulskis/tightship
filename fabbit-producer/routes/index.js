@@ -44,7 +44,7 @@ function connectionSettingsListner() {
 
 export function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
+};
 
 /**
 * Picks apart a job object from Bull.process() and formats the expected vault plan
@@ -86,7 +86,6 @@ const SMSVaultPlanProcessor = async (job) => {
     };
     return true;
 };
-
 
 
 // API and Route definition
