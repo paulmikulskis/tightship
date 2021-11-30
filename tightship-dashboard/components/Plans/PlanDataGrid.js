@@ -29,8 +29,6 @@ function numberWithCommas(x) {
 const StyledPlanDataGrid = styled(Box)`
     width: 100%;
     height: 100%;
-    transition: all .5s ease-in-out;
-    transition: all .5s ease-in-out;
 `;
 
 

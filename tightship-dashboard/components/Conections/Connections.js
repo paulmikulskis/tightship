@@ -12,6 +12,7 @@ import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 
 import PaiConnect from './PaiConnect';
 import Vaulters from './Vaulters';
+import Locations from './Locations';
 
 const ConnectionsContainer = styled.div`
     display: flex;
@@ -127,17 +128,14 @@ const Connections = () => {
                         aria-controls="panel3bh-content"
                         id="panel3bh-header">
                         <Typography sx={{ width: '33%', flexShrink: 0 }}>
-                            Advanced settings
+                            Locations
                         </Typography>
                         <Typography sx={{ color: 'text.secondary' }}>
-                            Filtering has been entirely disabled for whole web server
+                            Configure important locations
                         </Typography>
                     </AccordionSummary>
                     <AccordionDetails>
-                        <Typography>
-                        Nunc vitae orci ultricies, auctor nunc in, volutpat nisl. Integer sit
-                        amet egestas eros, vitae egestas augue. Duis vel est augue.
-                        </Typography>
+                        <Locations />
                     </AccordionDetails>
             </ConnectionsAccordion>
             <ConnectionsAccordion 

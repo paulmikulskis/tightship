@@ -49,7 +49,11 @@ const SideBarButton = styled(Button)`
     height: 4rem;
     padding: 1rem;
     font-size: 1rem; 
-    color: black;
+    color: slategrey;
+
+    &:hover {
+        color: black;
+    }
 
 `;
 
