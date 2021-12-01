@@ -10,12 +10,12 @@ const dailyDownload = async (job, paiClient=undefined) => {
     // CHECK POSTGRES to make sure that we have an account 
     // for this user before we start downloading anything
     const user = await Postgres.userExists(
-        Postgres.db, job.uid
+        Postgres.db, job.data.uid
     );
-    const userDoc = await FireStorage.getUserDoc(job.uid);
+    const userDoc = await FireStorage.getUserDoc(job.data.uid);
     const userData = userDoc.data()
     if (!userData) {
-        logger.error(`no user account email found for user id ${job.uid}, stopping PAI dailyDownload function`);
+        logger.error(`no user account email found for user id ${job.data.uid}, stopping PAI dailyDownload function`);
         return false;
     }
     if (!user) {
@@ -33,14 +33,14 @@ const dailyDownload = async (job, paiClient=undefined) => {
     // log in with PAI, get ATM List and Daily Transaction Report, vaulting info
     // we allow the passing of a PAI client to allow for mock clients for testing
     const pai = paiClient ? paiClient : new PAIClient();
-    const { username, password } = await FireStorage.getPAICredentials(job.uid);
+    const { username, password } = await FireStorage.getPAICredentials(job.data.uid);
     pai.login(username, password);
     const atms = await pai.downloadReport('ATM List');
     const balances = await pai.downloadReport('Daily Balance');
     const PAITerminalIds = atms.loc( {columns: ['Terminal Number']} )
         .values
         .flatMap( (v) => { return v });
-    const atmState = await crupdateATMs(job.uid, PAITerminalIds, atms, balances);
+    const atmState = await crupdateATMs(job.data.uid, PAITerminalIds, atms, balances);
     //console.log('ATM STATE: ', atmState);
     // get the earliest date of the ATM whose info we need:
     var lookbackDate = subDays(new Date(), 3).setHours(0, 0, 0, 0);
@@ -57,9 +57,9 @@ const dailyDownload = async (job, paiClient=undefined) => {
     const errr = await pai.downloadReport('Terminal Error Report', lookbackDate);
 
     // take away the time component from the dates on the ATM cash load report so we can match against them
-    logger.info(`processing daily logs for ${job.uid} for terminals: ${Object.keys(atmState)}`);
+    logger.info(`processing daily logs for ${job.data.uid} for terminals: ${Object.keys(atmState)}`);
     logger.info(`found furtherst needed lookback date to be ${formatISO9075(lookbackDate)}`);
-    await createTerminalErrorLogs(job.uid, PAITerminalIds, errr)
+    await createTerminalErrorLogs(job.data.uid, PAITerminalIds, errr)
     for (var tid of Object.keys(atmState)) {
         logger.info(`processing daily logs for terminal ${tid}`)
         await createDailyLogs(atmState[tid], dtr, aclr);
@@ -205,12 +205,26 @@ export const crupdateATMs = async (uid, PAITerminalIds, atms, balances) => {
             .loc({rows: atms['Terminal Number'].eq(tID)})
             .to_json()[0]
         //console.log('BALANCE: ', balance);
-        balance = balance ? parseFloat(balance[format(subDays(new Date(), 1), "MM/dd/yy")]) : -1
+        balance = balance ? parseFloat(
+            Object.entries(balance)
+            .filter(([key]) => {
+                return !key.includes('Terminal Number') && !key.includes('Location')
+            })
+            .map(([key, value]) => {
+                return [new Date(key), value]
+            })
+            .reduce((acc, key, i, arr) => {
+                return (
+                        (new Date(acc[0]).getTime() < new Date(key[0]).getTime()) && 
+                        (i < arr.length - 1) 
+                        ) ? key : acc
+            })[1]) : 0
         var lastLog = await Postgres.lastDailyLogDate(
             Postgres.db,
             tID
         );
-        var lastLog = lastLog ? lastLog : (new Date(term['First Trx'])).setHours(0, 0, 0, 0);
+        const firstTx = term['First Trx'] == '' ? new Date() : new Date(term['First Trx']);
+        var lastLog = lastLog ? lastLog : firstTx;
         allAtms = { 
             ...allAtms,
             [tID]: {
@@ -223,7 +237,7 @@ export const crupdateATMs = async (uid, PAITerminalIds, atms, balances) => {
                 state: term['State'],
                 zip: term['Zip'],
                 active: (term['Status'] == 'Activated' ? true : false),
-                first_txn: new Date(term['First Trx']),
+                first_txn: firstTx,
                 last_log: lastLog,
                 terminal_number: tID,
                 last_balance: balance,
@@ -269,7 +283,14 @@ export const crupdateATMs = async (uid, PAITerminalIds, atms, balances) => {
                         (i < arr.length - 1) 
                         ) ? key : acc
             })[1]) : 0
-        
+        // do not download terminals with no transaction history
+        if (term['First Trx'] == '') {
+            console.log(`terminal ${term['Location']} has first tx has ${term['First Trx']}`)
+            continue;
+        };
+
+        const firstTx = new Date(term['First Trx']);
+        console.log(`THIS TERMINAL FIRST TRX FROM DATA FRAME = ${firstTx}`)
         //console.log('BALANCE=', balance)
         allAtms = {
             ...allAtms,
@@ -282,9 +303,9 @@ export const crupdateATMs = async (uid, PAITerminalIds, atms, balances) => {
                 city: term['City'],
                 state: term['State'],
                 zip: term['Zip'],
-                first_txn: new Date(term['First Trx']),
+                first_txn: firstTx,
                 active: (term['Status'] === 'Activated' ? true : false),
-                last_log: new Date(term['First Trx']),
+                last_log: firstTx,
                 terminal_number: tID,
                 last_balance: balance
             }

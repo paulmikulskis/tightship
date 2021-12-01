@@ -103,6 +103,7 @@ const BandGranularitySlider = (props) => {
                 </Dialog>
             </SliderHeading>
             <Slider
+                color='secondary'
                 aria-label="Band Granularity"
                 defaultValue={0}
                 valueLabelFormat={v => <SliderLabel>{marks.filter(i => i.value == v)[0].label}</SliderLabel>}

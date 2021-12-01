@@ -15,8 +15,8 @@ import { config } from 'tightship-config';
  * Get port from environment and store in Express.
  */
 
-var port = normalizePort(config.get('fabbitProducer.port'));
-console.log('fabbit producer port: ', port);
+var port = normalizePort(config.get('apiWorker.port'));
+console.log('api-worker port: ', port);
 app.set('port', port);
 
 /**

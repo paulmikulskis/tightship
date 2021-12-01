@@ -9,7 +9,7 @@ import fs from "fs";
 const arg = process.argv[2].trim('"')
 
 
-const client = new PAIClient(subDays(new Date(), 100))
+const client = new PAIClient(subDays(new Date(), 365))
 console.log('client age: ', client.inception)
 await client.login('sergiog', 'Junesixteen2021')
 var report = await client.downloadReport(arg)

@@ -119,6 +119,7 @@ const CashLoadRange = (props) => {
                 </Dialog>
             </SliderHeading>
             <Slider
+                color='secondary'
                 valueLabelFormat={v => <SliderLabel>{marks.filter(i => i.value == v)[0].label}</SliderLabel>}
                 valueLabelDisplay="auto"
                 marks={marks}

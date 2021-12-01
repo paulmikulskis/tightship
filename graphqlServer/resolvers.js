@@ -128,13 +128,14 @@ const terminalAverages = async (startDate, endDate, dayOfWeek, tid, uid) => {
 };
 
 
-const terminalTotals = async (startDate, endDate, tid, uid) => {
+const terminalTotals = async (startDate, endDate, dayOfWeek, tid, uid) => {
     const start = startDate ? new Date(startDate) : subDays(new Date(), 7);
     const end = endDate ? new Date(endDate) : new Date();
     const totals = await Postgres.getTerminalTotals(
         Postgres.db,
         start,
         end,
+        dayOfWeek,
         tid,
         uid
     );
@@ -224,7 +225,7 @@ const terminalStatsRoot = async (startDate, endDate, dayOfWeek, tid, uid) => {
     return {
         daysAtZero: await daysAtZero(startDate, endDate, tid, uid),
         averages: await terminalAverages(startDate, endDate, dayOfWeek, tid, uid),
-        totals: await terminalTotals(startDate, endDate, tid, uid),
+        totals: await terminalTotals(startDate, endDate, dayOfWeek, tid, uid),
         transactionsByDay: await transactionsByDayFunction(startDate, endDate, tid, uid)
     };
 };
@@ -258,8 +259,8 @@ export const resolvers = {
 
         terminals: async (parent, args, ctx, info) => {
             // getting user info, argument sanitization
-            var uid = args.user?.uid;
-            uid = 'testUid_420';
+            var uid = args.uid;
+            //uid = 'testUid_420';
             const dayOfWeek = args.dayOfWeek ? args.dayOfWeek : undefined;
             const dailyLogsStartDate = args.dailyLogsStartDate ? new Date(args.dailyLogsStartDate) : subDays(new Date(), 7);
             const dailyLogsEndDate = args.dailyLogsEndDate ? new Date(args.dailyLogsEndDate) : new Date();
@@ -283,15 +284,15 @@ export const resolvers = {
         },
 
         sendEmails: async (parent, args, ctx, info) => {
-            var uid = args.user?.uid;
-            uid = 'testUid_420';
+            var uid = args.uid;
+            //uid = 'testUid_420';
             console.log(`will be sending emails to ${args.addresses} [NOT YET IMPLEMENTED!]`);
             return true;
         },
 
         sendSMSVaultPlan: async (parent, args, ctx, info) => {
             var uid = args.uid;
-            uid = 'testUid_420';
+            //uid = 'testUid_420';
             console.log('abount to enqueue SMS request')
             await Bully.enqueueSMSVaultPlan(args)
             console.log(`graphql queuing into Bull to send SMS's to ${args.numbers}`);

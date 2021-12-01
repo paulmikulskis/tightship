@@ -18,6 +18,8 @@ import ContactVaulters from '../ActionCards/ContactVaulters';
 import ConfigureAlertRules from '../ActionCards/ConfigureAlertRules';
 import GotoDashboard from '../ActionCards/GotoDashboard';
 import { subQuarters, format } from 'date-fns';
+import ShareIcon from '@mui/icons-material/Share';
+import Stack from '@mui/material/Stack';
 
 /**
  * Notes on MUI cards to keep good style:
@@ -38,7 +40,7 @@ const StyledHomeDock = styled.div`
 const StyledHome = styled.div`
     display: grid;
     grid-template-columns: repeat(4, 1fr);
-    grid-template-rows: 0.3fr 1.3fr 0.75fr 0.5fr;
+    grid-template-rows: 0.3fr 1.5fr 0.9fr 0.6fr;
     row-gap: 1rem;
     column-gap: 1rem;
     margin: 1rem;
@@ -54,12 +56,14 @@ const Center = styled.div`
 `;
 
 export const PaperNav = styled.div`
+    grid-row: 1/2;
     grid-column: 1/-1;
     height: 100%;
 `;
 
 const CardStats = styled.div`
     grid-column: 1/-1;
+    grid-row: 3/4;
     height: 100%;
     margin: 0 3rem;
     display: grid;
@@ -74,6 +78,7 @@ const HomeHero = styled(Card)`
         font-size: 6rem;
     }
     grid-column: 1/-1;
+    grid-row: 2/3;
     height: 100%;
     display: flex;
     flex-direction: row;
@@ -125,8 +130,9 @@ const Home = () => {
         )
     }
     if (error) return <p>{error.toString()}</p>;
-    var totals = data.app.terminals.stats.totals
-    //console.log(data.app.terminals);
+    var totals = data.app.terminals.stats.totals;
+    const noData = totals.length === 0;
+    console.log(`TERMINAL TOTALS: ${totals}`);
     const totalWithdrawlAmnt = totals.map(t => t.wdTxAmnt).reduce((a, b) => a + b, 0)
     const highestDraw = totals.map(t => [t.wdTxAmnt, t.locationName]).reduce((a, b) => {
         return a[0] > b[0] ? a : b
@@ -140,9 +146,24 @@ const Home = () => {
                 </PaperNav>
                 <HomeHero raised={false}>
                     <HomeHeroContent>
-                        <h1>Hey there, {avatarname}</h1>
-                        <StyledHomeDock>
-                            <HomeDock />
+                        <Typography variant='h1'>Hey there, {avatarname}</Typography>
+                        <StyledHomeDock style={{'margin-top': '3rem'}}>
+                            { noData ? (
+                                <Center>
+                                <Stack direction='row' spacing={0.7}>
+                                <Typography>
+                                    Head over to 
+                                </Typography>
+                                <ShareIcon fontSize='small'/>
+                                <Typography>
+                                    <b>connections</b> to hook up a payment processor
+                                </Typography>
+                                </Stack>
+                                </Center>
+                                ) : (
+                                <HomeDock /> 
+                                )
+                            }
                         </StyledHomeDock>
                     </HomeHeroContent>
                 </HomeHero>
@@ -151,10 +172,17 @@ const Home = () => {
                     <Center><DaysAtZero /></Center>
                     <Center style={{'grid-column': '3/5'}}><AtmHotlist /></Center>
                 </CardStats>
-                <PullNewData />
-                <ContactVaulters />
-                <ConfigureAlertRules />
-                <GotoDashboard />
+                {   noData ? (
+                    <div></div>
+                    ) : (
+                    <Stack style={{'grid-column': '1/-1', 'grid-row': '4/5'}} direction='row' spacing={1}>
+                        <PullNewData />
+                        <ContactVaulters />
+                        <ConfigureAlertRules />
+                        <GotoDashboard />
+                    </Stack>
+                    )
+                }
             </StyledHome>
         </div>
     )

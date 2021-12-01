@@ -57,9 +57,9 @@ const formatVaultPlanMessages = (terminalNames, terminalAmounts, vaulterNames, d
   return vaulterNames.map((vaulterName, index) => {
       const headerLine = `\nAhoy there ${vaulterName}!\nTightShip here with your vaulting plan for ${format(date, 'EEE, LLL io')}:\n\n`;
       const vaultLines = terminalNames.map((name, i) => {
-          return `${name}:\n$${numberWithCommas(terminalAmounts[i])}\n`
+          return `${name}:\n$${numberWithCommas(terminalAmounts[i])}`
       }).reduce((acc, current) => {
-          return acc + `${current}\n`
+          return acc + `\n${current}`
       });
       const originaMsg = originalMessage.length > 0 ? `user message:\n${originalMessage}` : ''
       const finalForm = headerLine + vaultLines + originaMsg;

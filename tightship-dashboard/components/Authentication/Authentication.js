@@ -10,7 +10,9 @@ const StyledLoginContainer = styled.div`
     flex-direction: column;
     justify-content: space-between;
     width: 300px;
-    border: 3px solid black;
+    border-radius: 15px;
+
+    border: 2px solid black;
 `;
 
 

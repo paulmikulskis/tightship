@@ -238,4 +238,5 @@ export class PAIClient {
 
 //     };
 };
-    
+
+export default { PAIClient }

@@ -3,6 +3,7 @@
   "version": "1.0.0",
   "type": "module",
   "scripts": {
+    "start": "NODE_ENV=development node ./bin/birth.js",
     "dev": "echo 'to-be-implemented!'"
   },
   "dependencies": {
@@ -11,6 +12,5 @@
     "firebase-admin": "^10.0.0",
     "papi": "1.0.0",
     "tightship-config": "1.0.0"
-  },
-  "devDependencies": {}
+  }
 }

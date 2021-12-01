@@ -1,7 +1,6 @@
 //require ('tightship-config');
 import { initializeApp, applicationDefault } from 'firebase-admin/app';
 import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
-import { collection, doc as fdoc, setDoc, getDoc, where } from "firebase/firestore"; 
 import { config } from 'tightship-config';
 
 const App = initializeApp({

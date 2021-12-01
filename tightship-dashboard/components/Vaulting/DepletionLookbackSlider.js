@@ -56,7 +56,7 @@ const DepletionLookbackSlider = (props) => {
 
         <StyledDaysOutSlider>
             <SliderHeading direction="row" spacing={1} >
-                <Box><h4>Query New Transactional Lookback</h4></Box>
+                <Box><h4>Choose Transaction History</h4></Box>
                 <Box><HelpIcon 
                     sx={{
                         marginTop: '0.05rem',
@@ -77,6 +77,7 @@ const DepletionLookbackSlider = (props) => {
                 </Dialog>
             </SliderHeading>
             <Slider
+                color='secondary'
                 aria-label="Depletion Lookback"
                 defaultValue={marks.filter(m => m.date.getTime() == transactionalLookback.getTime())[0].value}
                 valueLabelFormat={v => <SliderLabel>{marks.filter(i => i.value == v)[0].label}</SliderLabel>}

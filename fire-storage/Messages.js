@@ -9,7 +9,7 @@ const CRON_MIDNIGHT = '0 0 * * *';
 const CRON_ONE = '0 1 * * *';
 const CRON_TWO = '0 2 * * *';
 const CRON_THREE = '0 3 * * *';
-const CRON_MINUTE = '0 * * * *';
+const CRON_MINUTE = '* * * * *';
 
 export const processors = {
     pai: 'PAI',
@@ -96,10 +96,9 @@ export const enqueueDailyDownload = async (
         processor: processor,
     }
     return await dailyQueue.add(
-        `${processor}-dailyReport-${email}`,
         job_data,
         { 
-            repeat: { cron: cron_override ? cron_override : CRON_THREE },
+            repeat: { cron: cron_override ? cron_override : CRON_THREE, delay: 0 },
             jobId: uid,
         })
 };
@@ -126,7 +125,6 @@ export const enqueueLiveFeed = async (
         processor: processor,
     }
     return await liveFeedQueue.add(
-        `${processor}-liveFeed-${email}`,
         job_data,
         { 
             repeat: { cron: cron_override ? cron_override : CRON_MINUTE },

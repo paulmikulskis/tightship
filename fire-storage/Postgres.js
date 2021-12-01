@@ -419,8 +419,9 @@ export const createTerminal = async (
   active=true,
   last_balance) => {
 
-
-    const { lattitude, longitude } = await geocoder.search( { q: `${address.split(',')[0]}, ${city}, ${zip}` } )
+    const stret = address.split(',')[0].split('#')[0];
+    console.log(`location=${location_name}, FIRST_TX=${first_txn}`)
+    const { lattitude, longitude } = await geocoder.search( { q: `${stret}, ${city}, ${zip}` } )
       .then((response) => {
           logger.debug(`geocode for terminal ${terminal_id}: ${response[0].lat},${response[0].lon}`)
           return { lattitude: response[0].lat, longitude: response[0].lon }

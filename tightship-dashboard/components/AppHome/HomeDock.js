@@ -26,7 +26,7 @@ import SuspiciousActivity from './SuspiciousActivity';
 const HeroDock = styled(Box)`
     padding: 0.25rem 2rem;
     width: 100%;
-    height: 100%;
+    height: 5rem;
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -81,7 +81,7 @@ const HomeDock = () => {
     const stats = data.app.terminals.stats.averages;
     const info = data.app.terminals.info;
     return (
-        <HeroDock>
+        <HeroDock >
             <ErrorsDock 
                 errorLog={errorlog} 
             />

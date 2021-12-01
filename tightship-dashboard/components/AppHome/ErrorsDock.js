@@ -11,7 +11,7 @@ const StyledDockCard = styled(RaisableCard)`
     width: 100%;
     height: 100%;
     margin: 0 1rem;
-    padding: 0 1rem;
+    padding: 1rem 1rem;
     display: flex;
     flex-direction: column;
     align-items: center;

@@ -100,12 +100,13 @@ const PaiConnect = () => {
         return true;
     }, [userConnectionInfo])
 
-    function buttonStatus() { 
-        if (userInfoContext.pai_connected) {
-            return true;
-        }
-        if (!(userInfoContext.pai_connected) && toggleStatus) {
-            return false;
+    function buttonStatus() {
+        if (!userConnectionInfo?.pai_connected && userConnectionInfo?.pai_processing) {
+            return 'processing';
+        } else if (userConnectionInfo?.pai_connected) {
+            return 'connected';
+        } else if (!(userConnectionInfo?.pai_connected) && toggleStatus) {
+            return 'disconnected';
         } else {
             return undefined;
         }
@@ -146,12 +147,13 @@ const PaiConnect = () => {
         console.log('saving user PAI info: ', username, password);
 
         const connectionsRef = doc(db, 'connections', user.uid)
-
+        const processing = !userConnectionInfo?.pai_connected && toggleStatus ? true : false
         setDoc(
             connectionsRef, 
             {   pai_username: paiUsername, 
                 pai_password: paiPassword, 
                 pai_active: toggleStatus,
+                pai_processing: processing,
                 user: user.email },
             { merge: true }
             ).then(() => {

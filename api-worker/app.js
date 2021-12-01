@@ -33,27 +33,6 @@ const queueConfigArray = [
     'url': config.get('redis.host') 
   }
 ]
-app.locals.MonitoroQueues = queueConfigArray
-app.use('/dashboard', monitoro)
-
-// setting up the more important control panel for deleting and adding job data
-app.use('/', Arena(
-  {
-    Bull,
-    queues: [ 
-      {
-        name: config.get('bull.queues.daily'),
-        hostId: 'fabbit-producer',
-        redis: config.get('redis.host'),
-        type: 'bull'
-      }
-    ]
-  },
-  {
-    basePath: '/control-panel',
-    disableListen: true
-  }
-));
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {

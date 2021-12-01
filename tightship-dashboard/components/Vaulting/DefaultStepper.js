@@ -28,7 +28,7 @@ const DefaultStepper = (props) => {
            <Stepper 
                 activeStep={stepperStep}
                 sx={{
-                    width: '95%'
+                    width: '95%',
                 }}
             >
                 {steps.map((label, index) => {

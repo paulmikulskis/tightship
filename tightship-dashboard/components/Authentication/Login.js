@@ -4,6 +4,7 @@ import { collection, doc, getDoc, addDoc, setDoc, getFirestore } from "firebase/
 import { GoogleAuthProvider, getAuth, signInWithPopup, signInWithEmailAndPassword, createUserWithEmailAndPassword, signOut } from "firebase/auth";
 import { useFirebaseAuth } from "./FirebaseAuthProvider";
 import { useRouter } from 'next/router'
+import Button from '@mui/material/Button';
 
 
 const InputBox = styled.input`
@@ -147,7 +148,7 @@ const Login = () => {
                 <hr style={{height: '5px', color: 'black', width: '100%'}}/>
                 <FormItem>
                 <button type="button" onClick={() => router.push('/')}>
-                    Goto HOME
+                    Home
                     </button>
                 </FormItem>
             </LoginForm>);
@@ -157,7 +158,12 @@ const Login = () => {
         return (        
         <LoginForm>
             <FormItem>
-                <button onClick={signInWithGoogle}>Sign in with boogle</button> 
+                <Button 
+                    color='secondary'
+                    variant='outlined'
+                    onClick={signInWithGoogle}>
+                        Sign in with boogle
+                </Button> 
             </FormItem>
             <FormItem>
                 <p>or</p>
@@ -169,18 +175,32 @@ const Login = () => {
                 <InputBox id='password' type="text" placeholder="Password" onChange={e => setPassword(e.target.value)}/>
             </FormItem>
             <FormItem>
-                <button onClick={() => signInWithUsername(email, password)}>Sign in</button>
+                <Button 
+                    color='secondary'
+                    variant='outlined'
+                    onClick={() => signInWithUsername(email, password)}
+                >   Sign in
+                </Button>
             </FormItem>
             <FormItem>
-            <button type="button" onClick={() => router.push('/signup')}>
+            <Button 
+                color='secondary'
+                variant='outlined'
+                type="button" onClick={() => router.push('/signup')}
+            >
                 Sign Up
-                </button>
+                </Button>
             </FormItem>
             <hr style={{height: '5px', color: 'black', width: '100%'}}/>
             <FormItem>
-            <button type="button" onClick={() => router.push('/')}>
-                Goto HOME
-                </button>
+            <Button 
+                type="button" 
+                onClick={() => router.push('/')}
+                variant='outlined'
+                color='secondary'
+            >
+                Home
+            </Button>
             </FormItem>
         </LoginForm>);
     } else {

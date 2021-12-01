@@ -1,22 +1,32 @@
 import { Router } from 'express';
-import admin from 'firebase-admin';
-import { collection, doc, setDoc } from "firebase/firestore"; 
+import { initializeApp, applicationDefault } from 'firebase-admin/app';
+import { getFirestore, Timestamp, FieldValue } from 'firebase-admin/firestore';
+import { config } from 'tightship-config';
 var router = Router();
 import { FireStorage, Bully } from 'fire-storage';
 import Bull from 'bull';
-import { dailyDownloadPAI } from 'papi';
+import { dailyDownloadPAI, paiMock } from 'papi';
+
 
 const db = FireStorage.getDatabase();
-const dailyQueue = Bully.allQueues.dailyQueue
-const liveQueue = Bully.allQueues.liveFeedQueue
+const dailyQueue = Bully.dailyQueue
+const liveQueue = Bully.liveFeedQueue
 
-const processDailyJob = (job) => {
-
-    switch (job.processor) {
-      case 'PAI': dailyDownloadPAI(job);
-      case 'default': return console.log('PAI daily download no-op');
-    };
-    
+const processDailyJob = async (job) => {
+    const mockClient = config.get('pai.mockClient') ? new paiMock() : undefined;
+    if (job.data.processor === 'PAI') {
+      console.log(`downloading PAI for job ${job.data.uid}`)
+      dailyDownloadPAI(job, mockClient).then(result => {
+        const docRef = db.collection('connections').doc(job.data.uid);
+        docRef.set({
+            'pai_processing': false,
+            'pai_connected': true
+          }, { merge: true }
+        );
+      });
+    } else {
+      console.log(`skipping unknow processor for job=${JSON.stringify(job, null, 2)}`)
+    }
 };
 
 
